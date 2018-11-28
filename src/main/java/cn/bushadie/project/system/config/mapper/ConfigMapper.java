@@ -1,6 +1,7 @@
 package cn.bushadie.project.system.config.mapper;
 
 import cn.bushadie.project.system.config.domain.Config;
+import org.springframework.stereotype.Repository;
 
 import java.util.List;
 
@@ -9,6 +10,7 @@ import java.util.List;
  *
  * @author ruoyi
  */
+@Repository
 public interface ConfigMapper {
     /**
      * 查询参数配置信息

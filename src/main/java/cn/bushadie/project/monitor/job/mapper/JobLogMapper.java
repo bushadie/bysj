@@ -3,12 +3,14 @@ package cn.bushadie.project.monitor.job.mapper;
 import java.util.List;
 
 import cn.bushadie.project.monitor.job.domain.JobLog;
+import org.springframework.stereotype.Repository;
 
 /**
  * 调度任务日志信息 数据层
  *
  * @author ruoyi
  */
+@Repository
 public interface JobLogMapper {
     /**
      * 获取quartz调度器日志的计划任务

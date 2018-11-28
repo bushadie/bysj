@@ -4,7 +4,7 @@
         "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="cn.bushadie.project.system.user.mapper.UserMapper">
 
-    <resultMap type="User" id="UserResult">
+    <resultMap type="cn.bushadie.project.system.user.domain.User" id="UserResult">
         <id property="userId" column="user_id"/>
         <result property="deptId" column="dept_id"/>
         <result property="loginName" column="login_name"/>
@@ -24,11 +24,11 @@
         <result property="updateBy" column="update_by"/>
         <result property="updateTime" column="update_time"/>
         <result property="remark" column="remark"/>
-        <association property="dept" column="dept_id" javaType="Dept" resultMap="deptResult"/>
+        <association property="dept" column="dept_id" javaType="cn.bushadie.project.system.dept.domain.Dept" resultMap="deptResult"/>
         <collection property="roles" javaType="java.util.List" resultMap="RoleResult"/>
     </resultMap>
 
-    <resultMap id="deptResult" type="Dept">
+    <resultMap id="deptResult" type="cn.bushadie.project.system.dept.domain.Dept">
         <id property="deptId" column="dept_id"/>
         <result property="parentId" column="parent_id"/>
         <result property="deptName" column="dept_name"/>
@@ -36,7 +36,7 @@
         <result property="status" column="dept_status"/>
     </resultMap>
 
-    <resultMap id="RoleResult" type="Role">
+    <resultMap id="RoleResult" type="cn.bushadie.project.system.role.domain.Role">
         <id property="roleId" column="role_id"/>
         <result property="roleName" column="role_name"/>
         <result property="roleKey" column="role_key"/>
@@ -55,7 +55,7 @@
 			 left join sys_role r on r.role_id = ur.role_id
     </sql>
 
-    <select id="selectUserList" parameterType="User" resultMap="UserResult">
+    <select id="selectUserList" parameterType="cn.bushadie.project.system.user.domain.User" resultMap="UserResult">
         select u.user_id, u.dept_id, u.login_name, u.user_name, u.email, u.phonenumber, u.password, u.sex, u.avatar,
         u.salt, u.status, u.del_flag, u.login_ip, u.login_date, u.create_by, u.create_time, u.remark, d.dept_name from
         sys_user u
@@ -127,7 +127,7 @@
         </foreach>
     </delete>
 
-    <update id="updateUser" parameterType="User">
+    <update id="updateUser" parameterType="cn.bushadie.project.system.user.domain.User">
         update sys_user
         <set>
             <if test="deptId != null and deptId != 0">dept_id = #{deptId},</if>
@@ -149,7 +149,7 @@
         where user_id = #{userId}
     </update>
 
-    <insert id="insertUser" parameterType="User" useGeneratedKeys="true" keyProperty="userId">
+    <insert id="insertUser" parameterType="cn.bushadie.project.system.user.domain.User" useGeneratedKeys="true" keyProperty="userId">
         insert into sys_user(
         <if test="userId != null and userId != 0">user_id,</if>
         <if test="deptId != null and deptId != 0">dept_id,</if>

@@ -3,12 +3,14 @@ package cn.bushadie.project.monitor.operlog.mapper;
 import java.util.List;
 
 import cn.bushadie.project.monitor.operlog.domain.OperLog;
+import org.springframework.stereotype.Repository;
 
 /**
  * 操作日志 数据层
  *
  * @author ruoyi
  */
+@Repository
 public interface OperLogMapper {
     /**
      * 新增操作日志

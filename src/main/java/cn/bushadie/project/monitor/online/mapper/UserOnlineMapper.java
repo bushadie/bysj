@@ -3,12 +3,14 @@ package cn.bushadie.project.monitor.online.mapper;
 import java.util.List;
 
 import cn.bushadie.project.monitor.online.domain.UserOnline;
+import org.springframework.stereotype.Repository;
 
 /**
  * 在线用户 数据层
  *
  * @author ruoyi
  */
+@Repository
 public interface UserOnlineMapper {
     /**
      * 通过会话序号查询信息

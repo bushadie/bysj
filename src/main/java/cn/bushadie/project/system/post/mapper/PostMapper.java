@@ -3,12 +3,14 @@ package cn.bushadie.project.system.post.mapper;
 import java.util.List;
 
 import cn.bushadie.project.system.post.domain.Post;
+import org.springframework.stereotype.Repository;
 
 /**
  * 岗位信息 数据层
  *
  * @author ruoyi
  */
+@Repository
 public interface PostMapper {
     /**
      * 查询岗位数据集合

@@ -4,12 +4,14 @@ import java.util.List;
 
 import cn.bushadie.project.tool.gen.domain.ColumnInfo;
 import cn.bushadie.project.tool.gen.domain.TableInfo;
+import org.springframework.stereotype.Repository;
 
 /**
  * 代码生成 数据层
  *
  * @author ruoyi
  */
+@Repository
 public interface GenMapper {
     /**
      * 查询ry数据库表信息

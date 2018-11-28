@@ -4,6 +4,7 @@ import java.util.List;
 
 import org.apache.ibatis.annotations.Mapper;
 import cn.bushadie.project.system.dict.domain.DictType;
+import org.springframework.stereotype.Repository;
 
 /**
  * 字典表 数据层
@@ -11,6 +12,7 @@ import cn.bushadie.project.system.dict.domain.DictType;
  * @author ruoyi
  */
 @Mapper
+@Repository
 public interface DictTypeMapper {
     /**
      * 根据条件分页查询字典类型

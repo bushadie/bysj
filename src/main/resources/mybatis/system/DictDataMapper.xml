@@ -4,7 +4,7 @@
         "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="cn.bushadie.project.system.dict.mapper.DictDataMapper">
 
-    <resultMap type="DictData" id="DictDataResult">
+    <resultMap type="cn.bushadie.project.system.dict.domain.DictData" id="DictDataResult">
         <id property="dictCode" column="dict_code"/>
         <result property="dictSort" column="dict_sort"/>
         <result property="dictLabel" column="dict_label"/>
@@ -25,7 +25,7 @@
 		from sys_dict_data
     </sql>
 
-    <select id="selectDictDataList" parameterType="DictData" resultMap="DictDataResult">
+    <select id="selectDictDataList" parameterType="cn.bushadie.project.system.dict.domain.DictData" resultMap="DictDataResult">
         <include refid="selectDictDataVo"/>
         <where>
             <if test="dictType != null and dictType != ''">
@@ -40,7 +40,7 @@
         </where>
     </select>
 
-    <select id="selectDictDataByType" parameterType="DictData" resultMap="DictDataResult">
+    <select id="selectDictDataByType" parameterType="cn.bushadie.project.system.dict.domain.DictData" resultMap="DictDataResult">
         <include refid="selectDictDataVo"/>
         where dict_type = #{dictType} order by dict_sort asc
     </select>
@@ -70,7 +70,7 @@
         </foreach>
     </delete>
 
-    <update id="updateDictData" parameterType="DictData">
+    <update id="updateDictData" parameterType="cn.bushadie.project.system.dict.domain.DictData">
         update sys_dict_data
         <set>
             <if test="dictSort != null and dictSort != ''">dict_sort = #{dictSort},</if>
@@ -92,7 +92,7 @@
  		update sys_dict_data set dict_type = #{newDictType} where dict_type = #{oldDictType}
 	</update>
 
-    <insert id="insertDictData" parameterType="DictData">
+    <insert id="insertDictData" parameterType="cn.bushadie.project.system.dict.domain.DictData">
         insert into sys_dict_data(
         <if test="dictSort != null and dictSort != ''">dict_sort,</if>
         <if test="dictLabel != null and dictLabel != ''">dict_label,</if>

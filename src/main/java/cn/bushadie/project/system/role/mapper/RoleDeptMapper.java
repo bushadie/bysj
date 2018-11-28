@@ -3,12 +3,14 @@ package cn.bushadie.project.system.role.mapper;
 import java.util.List;
 
 import cn.bushadie.project.system.role.domain.RoleDept;
+import org.springframework.stereotype.Repository;
 
 /**
  * 角色与部门关联表 数据层
  *
  * @author ruoyi
  */
+@Repository
 public interface RoleDeptMapper {
     /**
      * 通过角色ID删除角色和部门关联

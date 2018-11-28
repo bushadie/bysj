@@ -2,6 +2,7 @@ package cn.bushadie.project.monitor.job.service;
 
 import java.util.List;
 import javax.annotation.PostConstruct;
+import javax.annotation.Resource;
 
 import cn.bushadie.common.constant.ScheduleConstants;
 import cn.bushadie.common.support.Convert;
@@ -22,7 +23,7 @@ import org.springframework.stereotype.Service;
  */
 @Service
 public class JobServiceImpl implements IJobService {
-    @Autowired
+    @Resource
     private Scheduler scheduler;
 
     @Autowired

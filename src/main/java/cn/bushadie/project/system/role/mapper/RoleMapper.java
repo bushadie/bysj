@@ -3,12 +3,14 @@ package cn.bushadie.project.system.role.mapper;
 import java.util.List;
 
 import cn.bushadie.project.system.role.domain.Role;
+import org.springframework.stereotype.Repository;
 
 /**
  * 角色表 数据层
  *
  * @author ruoyi
  */
+@Repository
 public interface RoleMapper {
     /**
      * 根据条件分页查询角色数据

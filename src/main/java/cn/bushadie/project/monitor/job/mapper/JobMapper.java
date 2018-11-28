@@ -3,12 +3,14 @@ package cn.bushadie.project.monitor.job.mapper;
 import java.util.List;
 
 import cn.bushadie.project.monitor.job.domain.Job;
+import org.springframework.stereotype.Repository;
 
 /**
  * 调度任务信息 数据层
  *
  * @author ruoyi
  */
+@Repository
 public interface JobMapper {
     /**
      * 查询调度任务日志集合
@@ -36,7 +38,7 @@ public interface JobMapper {
     /**
      * 通过调度ID删除调度任务信息
      *
-     * @param jobId 调度ID
+     * @param job 调度ID
      * @return 结果
      */
     public int deleteJobById(Job job);
@@ -47,7 +49,7 @@ public interface JobMapper {
      * @param ids 需要删除的数据ID
      * @return 结果
      */
-    public int deleteJobLogByIds(Long[] ids);
+//    public int deleteJobLogByIds(Long[] ids);
 
     /**
      * 修改调度任务信息

@@ -3,12 +3,14 @@ package cn.bushadie.project.system.user.mapper;
 import java.util.List;
 
 import cn.bushadie.project.system.user.domain.UserRole;
+import org.springframework.stereotype.Repository;
 
 /**
  * 用户表 数据层
  *
  * @author ruoyi
  */
+@Repository
 public interface UserRoleMapper {
     /**
      * 通过用户ID删除用户和角色关联

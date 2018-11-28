@@ -3,12 +3,14 @@ package cn.bushadie.project.monitor.logininfor.mapper;
 import java.util.List;
 
 import cn.bushadie.project.monitor.logininfor.domain.Logininfor;
+import org.springframework.stereotype.Repository;
 
 /**
  * 系统访问日志情况信息 数据层
  *
  * @author ruoyi
  */
+@Repository
 public interface LogininforMapper {
     /**
      * 新增系统登录日志

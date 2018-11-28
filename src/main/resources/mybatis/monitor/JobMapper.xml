@@ -4,7 +4,7 @@
         "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="cn.bushadie.project.monitor.job.mapper.JobMapper">
 
-    <resultMap type="Job" id="JobResult">
+    <resultMap type="cn.bushadie.project.monitor.job.domain.Job" id="JobResult">
         <id property="jobId" column="job_id"/>
         <result property="jobName" column="job_name"/>
         <result property="jobGroup" column="job_group"/>
@@ -25,7 +25,7 @@
 		from sys_job
     </sql>
 
-    <select id="selectJobList" parameterType="Job" resultMap="JobResult">
+    <select id="selectJobList" parameterType="cn.bushadie.project.monitor.job.domain.Job" resultMap="JobResult">
         <include refid="selectJobVo"/>
         <where>
             <if test="jobName != null and jobName != ''">
@@ -60,7 +60,7 @@
         </foreach>
     </delete>
 
-    <update id="updateJob" parameterType="Job">
+    <update id="updateJob" parameterType="cn.bushadie.project.monitor.job.domain.Job">
         update sys_job
         <set>
             <if test="jobName != null and jobName != ''">job_name = #{jobName},</if>
@@ -77,7 +77,7 @@
         where job_id = #{jobId}
     </update>
 
-    <insert id="insertJob" parameterType="Job" useGeneratedKeys="true" keyProperty="jobId">
+    <insert id="insertJob" parameterType="cn.bushadie.project.monitor.job.domain.Job" useGeneratedKeys="true" keyProperty="jobId">
         insert into sys_job(
         <if test="jobId != null and jobId != 0">job_id,</if>
         <if test="jobName != null and jobName != ''">job_name,</if>

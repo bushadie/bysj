@@ -4,12 +4,14 @@ import java.util.List;
 
 import org.apache.ibatis.annotations.Param;
 import cn.bushadie.project.system.menu.domain.Menu;
+import org.springframework.stereotype.Repository;
 
 /**
  * 菜单表 数据层
  *
  * @author ruoyi
  */
+@Repository
 public interface MenuMapper {
     /**
      * 查询系统所有菜单（含按钮）

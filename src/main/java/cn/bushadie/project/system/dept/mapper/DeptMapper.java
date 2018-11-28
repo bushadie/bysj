@@ -4,12 +4,14 @@ import java.util.List;
 
 import org.apache.ibatis.annotations.Param;
 import cn.bushadie.project.system.dept.domain.Dept;
+import org.springframework.stereotype.Repository;
 
 /**
  * 部门管理 数据层
  *
  * @author ruoyi
  */
+@Repository
 public interface DeptMapper {
     /**
      * 查询部门人数

@@ -4,7 +4,7 @@
         "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="cn.bushadie.project.monitor.online.mapper.UserOnlineMapper">
 
-    <resultMap type="UserOnline" id="UserOnlineResult">
+    <resultMap type="cn.bushadie.project.monitor.online.domain.UserOnline" id="UserOnlineResult">
         <id property="sessionId" column="sessionId"/>
         <result property="loginName" column="login_name"/>
         <result property="deptName" column="dept_name"/>
@@ -16,10 +16,10 @@
         <result property="startTimestamp" column="start_timestamp"/>
         <result property="lastAccessTime" column="last_access_time"/>
         <result property="expireTime" column="expire_time"/>
-        <association property="session" javaType="OnlineSession" resultMap="OnlineSessionResult"/>
+        <association property="session" javaType="cn.bushadie.project.monitor.online.domain.OnlineSession" resultMap="OnlineSessionResult"/>
     </resultMap>
 
-    <resultMap type="OnlineSession" id="OnlineSessionResult">
+    <resultMap type="cn.bushadie.project.monitor.online.domain.OnlineSession" id="OnlineSessionResult">
         <result property="host" column="ipaddr"/>
         <result property="browser" column="browser"/>
         <result property="os" column="os"/>
@@ -36,7 +36,7 @@
         where sessionid = #{sessionid}
     </select>
 
-    <insert id="saveOnline" parameterType="UserOnline">
+    <insert id="saveOnline" parameterType="cn.bushadie.project.monitor.online.domain.UserOnline">
 		replace into sys_user_online(sessionId, login_name, dept_name, ipaddr, login_location, browser, os, status, start_timestamp, last_access_time, expire_time)
         values (#{sessionId}, #{loginName}, #{deptName}, #{ipaddr}, #{loginLocation}, #{browser}, #{os}, #{status}, #{startTimestamp}, #{lastAccessTime}, #{expireTime})
 	</insert>
@@ -45,7 +45,7 @@
  		delete from sys_user_online where sessionId = #{sessionId}
  	</delete>
 
-    <select id="selectUserOnlineList" parameterType="UserOnline" resultMap="UserOnlineResult">
+    <select id="selectUserOnlineList" parameterType="cn.bushadie.project.monitor.online.domain.UserOnline" resultMap="UserOnlineResult">
         <include refid="selectOnlineVo"/>
         <where>
             <if test="ipaddr != null and ipaddr != ''">

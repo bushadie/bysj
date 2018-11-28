@@ -1,6 +1,7 @@
 package cn.bushadie.project.system.notice.mapper;
 
 import cn.bushadie.project.system.notice.domain.Notice;
+import org.springframework.stereotype.Repository;
 
 import java.util.List;
 
@@ -9,6 +10,7 @@ import java.util.List;
  *
  * @author ruoyi
  */
+@Repository
 public interface NoticeMapper {
     /**
      * 查询公告信息

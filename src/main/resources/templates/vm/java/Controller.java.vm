@@ -4,6 +4,7 @@ import java.util.List;
 
 import org.apache.shiro.authz.annotation.RequiresPermissions;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Controller;
 import org.springframework.ui.ModelMap;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -22,7 +23,7 @@ import cn.bushadie.common.utils.poi.ExcelUtil;
 /**
  * ${tableComment} 信息操作处理
  *
- * @author ${author}
+ * @author jdmy
  * @date ${datetime}
  */
 @Controller

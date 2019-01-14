@@ -6,7 +6,7 @@ import java.util.List;
 /**
  * ${tableComment} 服务层
  *
- * @author ${author}
+ * @author jdmy
  * @date ${datetime}
  */
 public interface I${className}Service {

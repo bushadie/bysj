@@ -102,4 +102,9 @@ public class DateUtils extends org.apache.commons.lang3.time.DateUtils {
             return null;
         }
     }
+
+    private static SimpleDateFormat formatter_yyyy_MM_dd = new SimpleDateFormat("yyyy-MM-dd");
+    public static String getyyyy_mm_dd(Date date){
+        return formatter_yyyy_MM_dd.format(date);
+    }
 }

@@ -38,6 +38,8 @@
         <swagger.version>2.7.0</swagger.version>
         <jsoup.version>1.11.3</jsoup.version>
         <poi.version>3.17</poi.version>
+        <version.feilong-platform>1.12.10</version.feilong-platform>
+        <hutool-all.version>4.1.19</hutool-all.version>
     </properties>
 
     <dependencies>
@@ -80,7 +82,10 @@
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-thymeleaf</artifactId>
         </dependency>
-
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-freemarker</artifactId>
+        </dependency>
         <!-- spring-boot-devtools -->
         <dependency>
             <groupId>org.springframework.boot</groupId>
@@ -93,7 +98,20 @@
             <groupId>mysql</groupId>
             <artifactId>mysql-connector-java</artifactId>
         </dependency>
-
+        <!--test-->
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-test</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.springframework</groupId>
+            <artifactId>spring-test</artifactId>
+            <version>5.1.2.RELEASE</version>
+        </dependency>
+        <dependency>
+            <groupId>junit</groupId>
+            <artifactId>junit</artifactId>
+        </dependency>
         <!-- SpringBoot集成mybatis框架 -->
         <dependency>
             <groupId>org.mybatis.spring.boot</groupId>
@@ -127,7 +145,17 @@
             <artifactId>commons-io</artifactId>
             <version>${commons.io.version}</version>
         </dependency>
-
+        <!--常用工具类 -->
+        <dependency>
+            <groupId>cn.hutool</groupId>
+            <artifactId>hutool-all</artifactId>
+            <version>${hutool-all.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>com.feilong.platform</groupId>
+            <artifactId>feilong-core</artifactId>
+            <version>${version.feilong-platform}</version>
+        </dependency>
         <!--文件上传工具类 -->
         <dependency>
             <groupId>commons-fileupload</groupId>
@@ -267,6 +295,10 @@
     </build>
 
     <repositories>
+        <repository>
+            <id>feilong-repository</id>
+            <url>https://raw.github.com/venusdrogon/feilong-platform/repository</url>
+        </repository>
         <repository>
             <id>public</id>
             <name>aliyun nexus</name>

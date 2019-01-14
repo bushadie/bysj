@@ -30,8 +30,7 @@
         where ${primaryKey.columnName} = #{${primaryKey.attrname}}
     </select>
 
-    <insert id="insert${className}" parameterType="${className}"#if($primaryKey.extra == 'auto_increment')
-            useGeneratedKeys="true" keyProperty="$primaryKey.attrname"#end>
+    <insert id="insert${className}" parameterType="${className}" keyProperty="id" useGeneratedKeys="true">
         insert into ${tableName}
         <trim prefix="(" suffix=")" suffixOverrides=",">
             #foreach($column in $columns)

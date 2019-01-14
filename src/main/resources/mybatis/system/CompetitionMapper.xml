@@ -1,0 +1,129 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="cn.bushadie.project.system.competition.mapper.CompetitionMapper">
+
+    <resultMap type="cn.bushadie.project.system.competition.domain.Competition" id="CompetitionResult">
+        <result property="id" column="id"/>
+        <result property="title" column="title"/>
+        <result property="uid" column="uid"/>
+        <result property="startTime" column="start_time"/>
+        <result property="endTime" column="end_time"/>
+        <result property="num" column="num"/>
+        <collection property="infos" javaType="java.util.List" resultMap="InfoResult"/>
+        <collection property="groups" javaType="java.util.List" resultMap="cn.bushadie.project.system.competition.mapper.GroupMapper.GroupResult"/>
+    </resultMap>
+    <resultMap id="InfoResult" type="cn.bushadie.project.system.competition.domain.Info">
+        <id property="id" column="id"/>
+        <id property="competitionid" column="competitionid"/>
+        <id property="k" column="k"/>
+        <id property="v" column="v"/>
+    </resultMap>
+    <sql id="selectCompetitionVo">
+        select id, title, uid, start_time, end_time, num
+        from com_competition
+    </sql>
+
+    <select id="selectCompetitionList" parameterType="cn.bushadie.project.system.competition.domain.Competition"
+            resultMap="CompetitionResult">
+        <include refid="selectCompetitionVo"/>
+        <where>
+            <if test="id != null ">and id = #{id}
+            </if>
+            <if test="title != null  and title != '' ">and title = #{title}
+            </if>
+            <if test="uid != null ">and uid = #{uid}
+            </if>
+            <if test="startTime != null ">and start_time = #{startTime}
+            </if>
+            <if test="endTime != null ">and end_time = #{endTime}
+            </if>
+            <if test="num != null ">and num = #{num}
+            </if>
+        </where>
+    </select>
+
+    <select id="selectCompetitionById" parameterType="Integer" resultMap="CompetitionResult">
+        <!--<include refid="selectCompetitionVo"/>-->
+        select
+        com.id, com.title, com.start_time, com.end_time, com.end_time, com.num,
+        info.id, info.competitionid,info.k, info.v,
+        gp.id, gp.least, gp.most, gp.num, gp.now_num, gp.accept,
+        gpf.id,gpf.groupid,gpf.uid,gpf.leader
+        from com_competition com
+        inner join com_info info on info.competitionid = com.id
+        left join com_group gp on gp.competitionid = com.id
+        left join com_groupinfo gpf on gpf.groupid = gp.id
+        where com.id = #{id}
+    </select>
+
+    <insert id="insertCompetition" parameterType="cn.bushadie.project.system.competition.domain.Competition"
+            keyProperty="id" useGeneratedKeys="true">
+        insert into com_competition
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="id != null  ">id,
+            </if>
+            <if test="title != null  and title != ''  ">title,
+            </if>
+            <if test="uid != null  ">uid,
+            </if>
+            <if test="startTime != null  ">start_time,
+            </if>
+            <if test="endTime != null  ">end_time,
+            </if>
+            <if test="num != null  ">num,
+            </if>
+        </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="id != null  ">#{id},
+            </if>
+            <if test="title != null  and title != ''  ">#{title},
+            </if>
+            <if test="uid != null  ">#{uid},
+            </if>
+            <if test="startTime != null  ">#{startTime},
+            </if>
+            <if test="endTime != null  ">#{endTime},
+            </if>
+            <if test="num != null  ">#{num},
+            </if>
+        </trim>
+    </insert>
+
+    <update id="updateCompetition" parameterType="cn.bushadie.project.system.competition.domain.Competition">
+        update com_competition
+        <trim prefix="SET" suffixOverrides=",">
+            <if test="title != null  and title != ''  ">title = #{title},
+            </if>
+            <if test="uid != null  ">uid = #{uid},
+            </if>
+            <if test="startTime != null  ">start_time = #{startTime},
+            </if>
+            <if test="endTime != null  ">end_time = #{endTime},
+            </if>
+            <if test="num != null  ">num = #{num},
+            </if>
+        </trim>
+        where id = #{id}
+    </update>
+
+    <delete id="deleteCompetitionById" parameterType="Integer">
+        delete
+        from com_competition
+        where id = #{id}
+    </delete>
+
+    <delete id="deleteCompetitionByIds" parameterType="String">
+        delete from com_competition where id in
+        <foreach item="item" collection="array" open="(" separator="," close=")">
+            #{item}
+        </foreach>;
+
+        delete from com_info where competitionid in
+        <foreach item="item" collection="array" open="(" separator="," close=")">
+            #{item}
+        </foreach>;
+    </delete>
+
+</mapper>

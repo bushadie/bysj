@@ -22,7 +22,7 @@ import io.swagger.annotations.ApiOperation;
  */
 @Api("用户信息管理")
 @RestController
-@RequestMapping("/test/*")
+@RequestMapping("/cn/bushadie/test/*")
 public class TestController extends BaseController {
     private final static List<Test> testList=new ArrayList<>();
 

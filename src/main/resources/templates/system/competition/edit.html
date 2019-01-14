@@ -1,0 +1,89 @@
+<!DOCTYPE HTML>
+<html lang="zh" xmlns:th="http://www.thymeleaf.org">
+<meta charset="utf-8">
+<head th:include="include :: header"></head>
+<body class="white-bg">
+<div class="wrapper wrapper-content animated fadeInRight ibox-content">
+    <!--/*@thymesVar id="competition" type="cn.bushadie.project.system.competition.domain.Competition"*/-->
+    <form class="form-horizontal m" id="form-competition-edit" th:object="${competition}">
+        <input id="id" name="id" th:value="${competition.id}"
+               type="hidden">
+        <div class="form-group">
+            <label class="col-sm-3 control-label">负责人id：</label>
+            <div class="col-sm-8">
+                <input id="uid" name="uid" th:value="${competition.uid}"
+                       class="form-control" type="text">
+            </div>
+        </div>
+        <div class="form-group">
+            <label class="col-sm-3 control-label">开始时间 导航栏：</label>
+            <div class="col-sm-8">
+                <input id="startTime" name="startTime" th:value="${competition.simpleStartTime()}"
+                       class="form-control time-input" type="text">
+            </div>
+        </div>
+        <div class="form-group">
+            <label class="col-sm-3 control-label">报名结束时间：</label>
+            <div class="col-sm-8">
+                <input id="endTime" name="endTime" th:value="${competition.simpleEndTime()}"
+                       class="form-control  time-input" type="text">
+            </div>
+        </div>
+        <div class="form-group">
+            <label class="col-sm-3 control-label">总报名人数：</label>
+            <div class="col-sm-8">
+                <input id="num" name="num" th:field="*{num}"
+                       class="form-control" type="text">
+            </div>
+        </div>
+    </form>
+    <hr>
+
+    <hr>
+    <form class="form-horizontal m" id="form-competition-addkv">
+        <div class="form-group">
+            <label class="col-sm-3 control-label">事务标题：</label>
+            <label class="col-sm-8 control-label"  style="text-align: left">事务内容：</label>
+            <a class="btn btn-success col-sm-1" onclick="addKV()">
+                <i class="fa fa-plus"></i> 添加
+            </a>
+        </div>
+        <div class="form-group" th:each="info,infoStast:${competition.infos}">
+            <div class="col-sm-3">
+                <input name="k" class="form-control" type="text" th:value="${info.k}">
+            </div>
+            <div class="col-sm-8">
+                <textarea name="v" class="form-control" type="text" th:text="${info.v}"></textarea>
+            </div>
+            <a class="btn btn-danger btn-del btn-del col-sm-1" onclick="del($(this))">
+                <i class="fa fa-remove"></i> 删除
+            </a>
+        </div>
+    </form>
+</div>
+<div th:include="include::footer"></div>
+<script type="text/javascript">
+
+    var prefix = ctx + "system/competition"
+    $("#form-competition-edit").validate({
+        // todo 规则验证
+        // rules: {
+        //     xxxx: {
+        //         required: true,
+        //     },
+        // }
+    });
+
+    function submitHandler() {
+        if ($.validate.form()) {
+            $.operate.save(prefix + "/edit", $('#form-competition-edit').serialize());
+        }
+    }
+    $(function () {
+    });
+    function del(obj) {
+        obj.parent().remove();
+    }
+</script>
+</body>
+</html>

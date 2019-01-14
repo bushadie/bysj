@@ -1,14 +1,16 @@
 package ${package}.mapper;
 
 import ${package}.domain.${className};
+import org.springframework.stereotype.Repository;
 import java.util.List;
 
 /**
  * ${tableComment} 数据层
  *
- * @author ${author}
+ * @author jdmy
  * @date ${datetime}
  */
+@Repository
 public interface ${className}Mapper {
     /**
      * 查询${tableComment}信息

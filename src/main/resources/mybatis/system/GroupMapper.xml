@@ -1,0 +1,118 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="cn.bushadie.project.system.competition.mapper.GroupMapper">
+
+    <resultMap type="cn.bushadie.project.system.competition.domain.Group" id="GroupResult">
+        <result property="id" column="id"/>
+        <result property="competitionid" column="competitionid"/>
+        <result property="least" column="least"/>
+        <result property="most" column="most"/>
+        <result property="num" column="num"/>
+        <result property="nowNum" column="now_num"/>
+        <result property="accept" column="accept"/>
+        <collection property="groupinfos" javaType="java.util.List" resultMap="cn.bushadie.project.system.competition.mapper.GroupinfoMapper.GroupinfoResult"/>
+    </resultMap>
+
+    <sql id="selectGroupVo">
+        select id, least, most, num, now_num, accept,competitionid
+        from com_group
+    </sql>
+
+    <select id="selectGroupList" parameterType="cn.bushadie.project.system.competition.domain.Group"
+            resultMap="GroupResult">
+        <include refid="selectGroupVo"/>
+        <where>
+            <if test="id != null ">and id = #{id}
+            </if>
+            <if test="competitionid != null ">and competitionid = #{competitionid}
+            </if>
+            <if test="least != null ">and least = #{least}
+            </if>
+            <if test="most != null ">and most = #{most}
+            </if>
+            <if test="num != null ">and num = #{num}
+            </if>
+            <if test="nowNum != null ">and now_num = #{nowNum}
+            </if>
+            <if test="accept != null ">and accept = #{accept}
+            </if>
+        </where>
+    </select>
+
+    <select id="selectGroupById" parameterType="Integer" resultMap="GroupResult">
+        <include refid="selectGroupVo"/>
+        where id = #{id}
+    </select>
+
+    <insert id="insertGroup" parameterType="cn.bushadie.project.system.competition.domain.Group" keyProperty="id"
+            useGeneratedKeys="true">
+        insert into com_group
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="id != null  ">id,
+            </if>
+            <if test="competitionid != null  ">competitionid,
+            </if>
+            <if test="least != null  ">least,
+            </if>
+            <if test="most != null  ">most,
+            </if>
+            <if test="num != null  ">num,
+            </if>
+            <if test="nowNum != null  ">now_num,
+            </if>
+            <if test="accept != null  ">accept,
+            </if>
+        </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="id != null  ">#{id},
+            </if>
+            <if test="competitionid != null  ">#{competitionid},
+            </if>
+            <if test="least != null  ">#{least},
+            </if>
+            <if test="most != null  ">#{most},
+            </if>
+            <if test="num != null  ">#{num},
+            </if>
+            <if test="nowNum != null  ">#{nowNum},
+            </if>
+            <if test="accept != null  ">#{accept},
+            </if>
+        </trim>
+    </insert>
+
+    <update id="updateGroup" parameterType="cn.bushadie.project.system.competition.domain.Group">
+        update com_group
+        <trim prefix="SET" suffixOverrides=",">
+            <if test="competitionid != null  ">competitionid = #{competitionid},
+            </if>
+            <if test="least != null  ">least = #{least},
+            </if>
+            <if test="most != null  ">most = #{most},
+            </if>
+            <if test="num != null  ">num = #{num},
+            </if>
+            <if test="nowNum != null  ">now_num = #{nowNum},
+            </if>
+            <if test="accept != null  ">accept = #{accept},
+            </if>
+        </trim>
+        where id = #{id}
+    </update>
+
+    <delete id="deleteGroupById" parameterType="Integer">
+        delete
+        from com_group
+        where id = #{id}
+    </delete>
+
+    <delete id="deleteGroupByIds" parameterType="String">
+        delete from com_group where id in
+        <foreach item="id" collection="array" open="(" separator="," close=")">
+            #{id}
+        </foreach>
+    </delete>
+
+</mapper>

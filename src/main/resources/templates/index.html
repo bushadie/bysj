@@ -81,7 +81,8 @@
                             <a th:if="${not #lists.isEmpty(cmenu.children)}" href="#">[[${cmenu.menuName}]]<span
                                     class="fa arrow"></span></a>
                             <ul th:if="${not #lists.isEmpty(cmenu.children)}" class="nav nav-third-level">
-                                <li th:each="emenu : ${cmenu.children}"><a class="menuItem" th:text="${emenu.menuName}"
+                                <li th:each="emenu : ${cmenu.children}">
+                                <a class="menuItem" th:text="${emenu.menuName}"
                                                                            th:href="@{${emenu.url}}">三级菜单</a></li>
                             </ul>
                         </li>
@@ -102,12 +103,12 @@
                     <a class="navbar-minimalize minimalize-styl-2 btn btn-default " href="#" title="收起菜单">
                         <i class="fa fa-bars"></i>
                     </a>
-                    <form role="search" class="navbar-form-custom" method="post" action="">
-                        <div class="form-group">
-                            <input type="text" placeholder="请输入您需要查找的内容 …" class="form-control" name="top-search"
-                                   id="top-search">
-                        </div>
-                    </form>
+                    <!--<form role="search" class="navbar-form-custom" method="post" action="">-->
+                        <!--<div class="form-group">-->
+                            <!--<input type="text" placeholder="请输入您需要查找的内容 …" class="form-control" name="top-search"-->
+                                   <!--id="top-search">-->
+                        <!--</div>-->
+                    <!--</form>-->
                 </div>
                 <ul class="nav navbar-top-links navbar-right welcome-message">
                     <li>

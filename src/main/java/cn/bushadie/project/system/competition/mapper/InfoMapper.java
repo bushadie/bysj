@@ -2,6 +2,8 @@ package cn.bushadie.project.system.competition.mapper;
 
 import cn.bushadie.project.system.competition.domain.Info;
 import org.springframework.stereotype.Repository;
+
+import java.util.Collection;
 import java.util.List;
 
 /**
@@ -35,6 +37,7 @@ public interface InfoMapper {
      * @return 结果
      */
     public int insertInfo(Info info);
+    public int insertInfos(List<Info> infos);
 
     /**
      * 修改具体
@@ -59,5 +62,12 @@ public interface InfoMapper {
      * @return 结果
      */
     public int deleteInfoByIds(String[] ids);
+
+    /**
+     * 更具竞赛id删除相关信息
+     * @param id
+     * @return
+     */
+    public int deleteInfoByCompetitionId(Integer id);
 
 }

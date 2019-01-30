@@ -76,7 +76,17 @@ public class CompetitionService {
      * @param competition 竞赛信息
      * @return 结果
      */
+    @Transactional
     public int updateCompetition(Competition competition) {
+        infoMapper.deleteInfoByCompetitionId(competition.getId());
+        if( competition.getInfos().size()>0 ){
+            infoMapper.insertInfos(competition.getInfos());
+        }
+
+        groupMapper.deleteGroupByCompetitionId(competition.getId());
+        if( competition.getGroups().size()>0 ){
+            groupMapper.insertGroups(competition.getGroups());
+        }
         return competitionMapper.updateCompetition(competition);
     }
 

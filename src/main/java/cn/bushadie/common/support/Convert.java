@@ -311,6 +311,9 @@ public class Convert {
      * @return 结果
      */
     public static String[] toStrArray(String str) {
+        if( str==null ){
+            return new String[0];
+        }
         return toStrArray("," ,str);
     }
 

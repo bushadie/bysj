@@ -60,6 +60,18 @@
         </trim>
     </insert>
 
+    <insert id="insertInfos" parameterType="java.util.List">
+        insert into com_info
+        (competitionid, k,  v) values
+          <foreach collection="list" index="index" item="item" separator="," >
+              (
+                  #{item.competitionid},
+                  #{item.k},
+                  #{item.v}
+              )
+          </foreach>
+    </insert>
+
     <update id="updateInfo" parameterType="cn.bushadie.project.system.competition.domain.Info">
         update com_info
         <trim prefix="SET" suffixOverrides=",">
@@ -84,6 +96,12 @@
         <foreach item="id" collection="array" open="(" separator="," close=")">
             #{id}
         </foreach>
+    </delete>
+
+    <delete id="deleteInfoByCompetitionId"  parameterType="Integer">
+        delete
+        from com_info
+        where competitionid = #{id}
     </delete>
 
 </mapper>

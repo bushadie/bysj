@@ -40,23 +40,34 @@ public class Group extends BaseEntity {
     /**
      * 现有组数量
      */
-    private Integer nowNum;
+    private Integer nowNum=0;
     /**
      * 是否满足条件
      */
-    private Integer accept;
+    private Integer accept=0;
 
     private List<Groupinfo> groupinfos=new ArrayList<>();
 
     public Group() {
-        accept=0;
-        nowNum=0;
     }
 
     public Group(String  least,String  most,String  num) {
-        Group group=new Group();
-        group.least=Integer.parseInt(least);
-        group.most=Integer.parseInt(most);
-        group.num=Integer.parseInt(num);
+        this.least=Integer.parseInt(least);
+        this.most=Integer.parseInt(most);
+        this.num=Integer.parseInt(num);
     }
+
+    public Group setLeastString(String least){
+        this.least = Integer.valueOf(least);
+        return this;
+    }
+    public Group setMostString(String most){
+        this.most = Integer.valueOf(most);
+        return this;
+    }
+    public Group setNumString(String num){
+        this.num = Integer.valueOf(num);
+        return this;
+    }
+
 }

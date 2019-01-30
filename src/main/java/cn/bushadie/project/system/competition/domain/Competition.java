@@ -59,7 +59,6 @@ public class Competition {
     public String  simpleStartTime(){
         try {
             return DateUtils.getyyyy_mm_dd(startTime);
-//            return DateFormatUtils.format(startTime,"yyyy-mm-dd");
         }catch(Exception e) {
             return "";
         }
@@ -67,10 +66,6 @@ public class Competition {
     public String  simpleEndTime(){
         try {
             return DateUtils.getyyyy_mm_dd(endTime);
-//            SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd");
-//            return formatter.format(endTime);
-//            return DateFormat.getDateInstance().format(endTime);
-//            return DateFormatUtils.format(endTime,"yyyy-mm-dd");
         }catch(Exception e) {
             return "";
         }

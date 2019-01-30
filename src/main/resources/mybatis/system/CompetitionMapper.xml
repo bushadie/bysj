@@ -10,7 +10,7 @@
         <result property="uid" column="uid"/>
         <result property="startTime" column="start_time"/>
         <result property="endTime" column="end_time"/>
-        <result property="num" column="num"/>
+        <result property="num" column="comnum"/>
         <collection property="infos" javaType="java.util.List" resultMap="InfoResult"/>
         <collection property="groups" javaType="java.util.List" resultMap="cn.bushadie.project.system.competition.mapper.GroupMapper.GroupResult"/>
     </resultMap>
@@ -42,17 +42,18 @@
             <if test="num != null ">and num = #{num}
             </if>
         </where>
+        order by id desc
     </select>
 
     <select id="selectCompetitionById" parameterType="Integer" resultMap="CompetitionResult">
         <!--<include refid="selectCompetitionVo"/>-->
         select
-        com.id, com.title, com.start_time, com.end_time, com.end_time, com.num,
+        com.id, com.title, com.start_time, com.end_time, com.end_time, com.num comnum,
         info.id, info.competitionid,info.k, info.v,
-        gp.id, gp.least, gp.most, gp.num, gp.now_num, gp.accept,
+        gp.id, gp.least, gp.most, gp.num groupnum, gp.now_num, gp.accept,
         gpf.id,gpf.groupid,gpf.uid,gpf.leader
         from com_competition com
-        inner join com_info info on info.competitionid = com.id
+        left join com_info info on info.competitionid = com.id
         left join com_group gp on gp.competitionid = com.id
         left join com_groupinfo gpf on gpf.groupid = gp.id
         where com.id = #{id}
@@ -94,7 +95,7 @@
     <update id="updateCompetition" parameterType="cn.bushadie.project.system.competition.domain.Competition">
         update com_competition
         <trim prefix="SET" suffixOverrides=",">
-            <if test="title != null  and title != ''  ">title = #{title},
+            <if test="title != null ">title = #{title},
             </if>
             <if test="uid != null  ">uid = #{uid},
             </if>
@@ -115,12 +116,28 @@
     </delete>
 
     <delete id="deleteCompetitionByIds" parameterType="String">
+        <!--删除主表-->
         delete from com_competition where id in
         <foreach item="item" collection="array" open="(" separator="," close=")">
             #{item}
         </foreach>;
-
+        <!--删除附加信息表-->
         delete from com_info where competitionid in
+        <foreach item="item" collection="array" open="(" separator="," close=")">
+            #{item}
+        </foreach>;
+
+        <!--删除组信息-->
+        delete from com_groupinfo where groupid in
+        (
+              select id from com_group where competitionid in
+            <foreach item="item" collection="array" open="(" separator="," close=")">
+                #{item}
+            </foreach>
+          );
+
+        <!--删除组-->
+        delete from com_group where competitionid in
         <foreach item="item" collection="array" open="(" separator="," close=")">
             #{item}
         </foreach>;

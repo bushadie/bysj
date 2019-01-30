@@ -9,7 +9,7 @@
         <result property="competitionid" column="competitionid"/>
         <result property="least" column="least"/>
         <result property="most" column="most"/>
-        <result property="num" column="num"/>
+        <result property="num" column="groupnum"/>
         <result property="nowNum" column="now_num"/>
         <result property="accept" column="accept"/>
         <collection property="groupinfos" javaType="java.util.List" resultMap="cn.bushadie.project.system.competition.mapper.GroupinfoMapper.GroupinfoResult"/>
@@ -45,6 +45,11 @@
         <include refid="selectGroupVo"/>
         where id = #{id}
     </select>
+    <delete id="deleteGroupByCompetitionId">
+        delete
+        from com_group
+        where competitionid = #{id}
+    </delete>
 
     <insert id="insertGroup" parameterType="cn.bushadie.project.system.competition.domain.Group" keyProperty="id"
             useGeneratedKeys="true">
@@ -81,6 +86,18 @@
             <if test="accept != null  ">#{accept},
             </if>
         </trim>
+    </insert>
+    <insert id="insertGroups" parameterType="java.util.List">
+        insert into com_group
+        (competitionid,least,most,num) values
+        <foreach collection="list" index="index" item="item" separator="," >
+            (
+            #{item.competitionid},
+            #{item.least},
+            #{item.most},
+            #{item.num}
+            )
+        </foreach>
     </insert>
 
     <update id="updateGroup" parameterType="cn.bushadie.project.system.competition.domain.Group">

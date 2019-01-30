@@ -11,12 +11,14 @@ import cn.bushadie.project.system.competition.domain.Competition;
 import cn.bushadie.project.system.competition.domain.Group;
 import cn.bushadie.project.system.competition.domain.Info;
 import cn.bushadie.project.system.competition.service.CompetitionService;
+import lombok.Data;
 import org.apache.shiro.authz.annotation.RequiresPermissions;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.ModelMap;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
@@ -29,7 +31,7 @@ import java.util.List;
 @Controller
 @RequestMapping("/system/competition")
 public class CompetitionController extends BaseController {
-    private String prefix="system/competition" ;
+    private String prefix="system/competition";
 
     @Autowired
     private CompetitionService competitionService;
@@ -37,7 +39,7 @@ public class CompetitionController extends BaseController {
     @RequiresPermissions("system:competition:view")
     @GetMapping()
     public String competition() {
-        return prefix+"/competition" ;
+        return prefix+"/competition";
     }
 
     /**
@@ -61,7 +63,7 @@ public class CompetitionController extends BaseController {
     @ResponseBody
     public AjaxResult export(Competition competition) {
         List<Competition> list=competitionService.selectCompetitionList(competition);
-        ExcelUtil<Competition> util=new ExcelUtil<Competition>(Competition. class);
+        ExcelUtil<Competition> util=new ExcelUtil<Competition>(Competition.class);
         return util.exportExcel(list,"competition");
     }
 
@@ -70,34 +72,34 @@ public class CompetitionController extends BaseController {
      */
     @GetMapping("/add")
     public String add() {
-        return prefix+"/add" ;
+        return prefix+"/add";
     }
 
     /**
      * 新增保存竞赛
      */
     @RequiresPermissions("system:competition:add")
-    @Log(title="竞赛" , businessType=BusinessType.INSERT)
+    @Log(title="事务", businessType=BusinessType.INSERT)
     @PostMapping("/add")
     @ResponseBody
-    public AjaxResult addSave(Competition competition,String k,String v,String min,String max,String groupNum) {
-        String[] ks=k.split(",");
-        String[] vs=v.split(",");
-        for(int i = 0;i< ks.length;i++){
-            Info info=new Info();
-            info.setK(ks[i]).setV(vs[i]);
-            competition.getInfos().add(info);
-        }
-
-        String[] mins=Convert.toStrArray(min);
-        String[] maxs=Convert.toStrArray(max);
-        String[] groupNums=Convert.toStrArray(groupNum);
-        for(int i=0;i<mins.length;i++){
-            Group group=new Group(mins[i],maxs[i],groupNums[i]);
-            competition.getGroups().add(group);
-        }
-
-        int result=competitionService.insertCompetition(competition);
+    public AjaxResult addSave(Competition competition,String k,String v,String min,String max,String groupNum,DataVo data) {
+//        String[] ks=Convert.toStrArray(k);
+//        String[] vs=Convert.toStrArray(v);
+//        for(int i=0;i<ks.length;i++) {
+//            Info info=new Info();
+//            info.setK(ks[i]).setV(vs[i]);
+//            competition.getInfos().add(info);
+//        }
+//
+//        String[] mins=Convert.toStrArray(min);
+//        String[] maxs=Convert.toStrArray(max);
+//        String[] groupNums=Convert.toStrArray(groupNum);
+//        for(int i=0;i<mins.length;i++) {
+//            Group group=new Group(mins[i],maxs[i],groupNums[i]);
+//            competition.getGroups().add(group);
+//        }
+        data.getInstance();
+        int result=competitionService.insertCompetition(data.getInstance());
         return toAjax(result);
     }
 
@@ -106,19 +108,20 @@ public class CompetitionController extends BaseController {
      */
     @GetMapping("/edit/{id}")
     public String edit(@PathVariable("id") Integer id,ModelMap mmap) {
-        Competition competition =competitionService.selectCompetitionById(id);
-        mmap.put("competition" , competition);
-        return prefix+"/edit" ;
+        Competition competition=competitionService.selectCompetitionById(id);
+        mmap.put("competition",competition);
+        return prefix+"/edit";
     }
 
     /**
      * 修改保存竞赛
      */
     @RequiresPermissions("system:competition:edit")
-    @Log(title="竞赛" , businessType=BusinessType.UPDATE)
+    @Log(title="竞赛", businessType=BusinessType.UPDATE)
     @PostMapping("/edit")
     @ResponseBody
-    public AjaxResult editSave(Competition competition) {
+    public AjaxResult editSave(DataVo data) {
+        Competition competition=data.getInstance();
         return toAjax(competitionService.updateCompetition(competition));
     }
 
@@ -126,11 +129,51 @@ public class CompetitionController extends BaseController {
      * 删除竞赛
      */
     @RequiresPermissions("system:competition:remove")
-    @Log(title="竞赛" , businessType=BusinessType.DELETE)
+    @Log(title="竞赛", businessType=BusinessType.DELETE)
     @PostMapping("/remove")
     @ResponseBody
     public AjaxResult remove(String ids) {
         return toAjax(competitionService.deleteCompetitionByIds(ids));
     }
+
+    @Data
+    private class DataVo {
+        private Integer id, num;
+        private Date startTime, endTime;
+        private String k, v, min, max, groupNum,title;
+        private String[] ks, vs, mins, maxs, groupNums;
+        private Competition competition =null;
+        private Competition getInstance() {
+            check();
+            if(competition!=null) {
+                return competition;
+            }
+            competition = new Competition();
+            ks=Convert.toStrArray(k);
+            vs=Convert.toStrArray(v);
+            mins=Convert.toStrArray(min);
+            maxs=Convert.toStrArray(max);
+            groupNums=Convert.toStrArray(groupNum);
+
+            competition.setId(id).setTitle(title).setNum(num)
+                    .setStartTime(startTime).setEndTime(endTime);
+            for(int i=0;i<ks.length;i++) {
+                Info info=new Info().setK(ks[i]).setV(vs[i]).setCompetitionid(id);
+                competition.getInfos().add(info);
+            }
+            for(int i=0;i<mins.length;i++) {
+                Group group=new Group().setLeastString(mins[i]).setMostString(maxs[i]).setNumString(groupNums[i]).setCompetitionid(id);
+                competition.getGroups().add(group);
+            }
+            return competition;
+        }
+
+        private void check(){
+            if(num==null) {
+                num=0;
+            }
+        }
+    }
+
 
 }

@@ -1,4 +1,4 @@
-package cn.bushadie.test;
+package cn.bushadie;
 
 import cn.hutool.core.date.DateUtil;
 import org.apache.commons.lang3.time.DateFormatUtils;

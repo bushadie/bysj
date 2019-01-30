@@ -22,6 +22,12 @@ public interface GroupMapper {
     public Group selectGroupById(Integer id);
 
     /**
+     * @param id ID
+     * @return 组数 信息
+     */
+    public int deleteGroupByCompetitionId(Integer id);
+
+    /**
      * 查询组数 列表
      *
      * @param group 组数 信息
@@ -37,8 +43,10 @@ public interface GroupMapper {
      */
     public int insertGroup(Group group);
 
+    public int insertGroups(List<Group> groups);
+
     /**
-     * 修改组数 
+     * 修改组数
      *
      * @param group 组数 信息
      * @return 结果
@@ -46,7 +54,7 @@ public interface GroupMapper {
     public int updateGroup(Group group);
 
     /**
-     * 删除组数 
+     * 删除组数
      *
      * @param id 组数 ID
      * @return 结果
@@ -54,11 +62,10 @@ public interface GroupMapper {
     public int deleteGroupById(Integer id);
 
     /**
-     * 批量删除组数 
+     * 批量删除组数
      *
      * @param ids 需要删除的数据ID
      * @return 结果
      */
     public int deleteGroupByIds(String[] ids);
-
 }

@@ -17,11 +17,11 @@ public class Info  {
     /**
      *
      */
-    private Integer id;
+    private Long id;
     /**
      * 所属竞赛id
      */
-    private Integer competitionid;
+    private Long competitionid;
     /**
      *
      */

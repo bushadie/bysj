@@ -19,7 +19,7 @@ public interface CompetitionMapper {
      * @param id 竞赛ID
      * @return 竞赛信息
      */
-    public Competition selectCompetitionById(Integer id);
+    public Competition selectCompetitionById(Long id);
 
     /**
      * 查询竞赛列表

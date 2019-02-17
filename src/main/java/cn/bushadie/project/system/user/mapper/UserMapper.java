@@ -1,6 +1,7 @@
 package cn.bushadie.project.system.user.mapper;
 
 import cn.bushadie.project.system.user.domain.User;
+import org.springframework.stereotype.Repository;
 
 import java.util.List;
 
@@ -9,6 +10,7 @@ import java.util.List;
  *
  * @author ruoyi
  */
+@Repository
 public interface UserMapper {
     /**
      * 根据条件分页查询用户对象

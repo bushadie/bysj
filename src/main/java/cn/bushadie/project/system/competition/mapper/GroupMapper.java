@@ -25,7 +25,7 @@ public interface GroupMapper {
      * @param id ID
      * @return 组数 信息
      */
-    public int deleteGroupByCompetitionId(Integer id);
+    public int deleteGroupByCompetitionId(Long id);
 
     /**
      * 查询组数 列表

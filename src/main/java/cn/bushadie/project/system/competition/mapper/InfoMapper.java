@@ -68,6 +68,6 @@ public interface InfoMapper {
      * @param id
      * @return
      */
-    public int deleteInfoByCompetitionId(Integer id);
+    public int deleteInfoByCompetitionId(Long id);
 
 }

@@ -13,20 +13,8 @@
                         <li>
                             事务名称：<input type="text" name="title"/>
                         </li>
-                        <!--<li>-->
-                            <!--负责人id：<input type="text" name="uid"/>-->
-                        <!--</li>-->
-
-                        <li>
-                            开始时间：<input type="text" name="startTime"/>
-                        </li>
-
-                        <li>
-                            报名结束时间+：<input type="text" name="endTime"/>
-                        </li>
-
-                        <li>
-                            总报名人数：<input type="text" name="num"/>
+                        <li shiro:hasRole="admin">
+                            创建人姓名：<input type="text" name="username" />
                         </li>
 
                         <li>
@@ -67,7 +55,7 @@
     var editFlag = [[${@permission.hasPermi('system:competition:edit')}]];
     var removeFlag = [[${@permission.hasPermi('system:competition:remove')}]];
     var prefix = ctx + "system/competition";
-
+    var datas = [[${@dict.getType('com_competition_status')}]];
     $(function () {
         var options = {
             url: prefix + "/list",
@@ -83,7 +71,7 @@
             },
                 {
                     field: 'id',
-                    title: '',
+                    title: '事务id',
                     visible: false
                 },
                 {
@@ -92,10 +80,10 @@
                     sortable: true
                 },
                 {
-                    field: 'uid',
-                    title: '负责人id',
-                    sortable: true,
-                    visible: false
+                    field: 'user.userName',
+                    title: '创建人姓名',
+                    sortable: true
+                    // visible: false
                 },
                 {
                     field: 'startTime',
@@ -111,6 +99,14 @@
                     field: 'num',
                     title: '总报名人数',
                     sortable: true
+                },
+                {
+                    field: 'signUpStatus',
+                    title: '状态',
+                    align: 'center',
+                    formatter: function (value, row, index) {
+                        return $.table.selectDictLabel(datas, value);
+                    }
                 },
                 {
                     title: '操作',

@@ -6,6 +6,9 @@ import cn.bushadie.project.system.competition.domain.Group;
 import cn.bushadie.project.system.competition.domain.Info;
 import cn.bushadie.project.system.competition.mapper.GroupMapper;
 import cn.bushadie.project.system.competition.mapper.InfoMapper;
+import cn.bushadie.project.system.role.domain.Role;
+import cn.bushadie.project.system.user.domain.User;
+import cn.bushadie.project.system.user.mapper.UserMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import cn.bushadie.project.system.competition.mapper.CompetitionMapper;
@@ -27,6 +30,8 @@ public class CompetitionService {
     private InfoMapper infoMapper;
     @Autowired
     private GroupMapper groupMapper;
+    @Autowired
+    private UserMapper userMapper;
 
     /**
      * 查询竞赛信息
@@ -34,7 +39,7 @@ public class CompetitionService {
      * @param id 竞赛ID
      * @return 竞赛信息
      */
-    public Competition selectCompetitionById(Integer id) {
+    public Competition selectCompetitionById(Long id) {
         return competitionMapper.selectCompetitionById(id);
     }
 
@@ -100,4 +105,17 @@ public class CompetitionService {
         return competitionMapper.deleteCompetitionByIds(Convert.toStrArray(ids));
     }
 
+    public boolean isOnlyTeacher(long id){
+        User user=userMapper.selectUserById((long)id);
+        boolean isTeacher=false,isAdmin=false;
+        for(Role role: user.getRoles()) {
+            if("teacher".equals(role.getRoleKey())){
+                isTeacher=true;
+            }
+            if("admin".equals(role.getRoleKey())){
+                isAdmin=true;
+            }
+        }
+        return (!isAdmin) && isTeacher;
+    }
 }

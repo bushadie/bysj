@@ -5,57 +5,55 @@
 <mapper namespace="cn.bushadie.project.system.competition.mapper.GroupinfoMapper">
 
     <resultMap type="cn.bushadie.project.system.competition.domain.Groupinfo" id="GroupinfoResult">
-        <result property="id" column="id"/>
-        <result property="groupid" column="groupid"/>
-        <result property="uid" column="uid"/>
-        <result property="leader" column="leader"/>
+        <result property="id" column="groupinfo_id"/>
+        <result property="groupid" column="groupinfo_groupid"/>
+        <result property="uid" column="groupinfo_uid"/>
+        <result property="leader" column="groupinfo_leader"/>
     </resultMap>
 
     <sql id="selectGroupinfoVo">
-        select id, groupid, uid, leader
-        from com_groupinfo
+        select groupinfo_id, groupinfo_groupid, groupinfo_uid, groupinfo_leader from com_groupinfo
     </sql>
 
-    <select id="selectGroupinfoList" parameterType="cn.bushadie.project.system.competition.domain.Groupinfo"
-            resultMap="GroupinfoResult">
+    <select id="selectGroupinfoList" parameterType="cn.bushadie.project.system.competition.domain.Groupinfo" resultMap="GroupinfoResult">
         <include refid="selectGroupinfoVo"/>
         <where>
-            <if test="id != null ">and id = #{id}
+            <if test="groupinfoId != null ">and groupinfo_id = #{id}
             </if>
-            <if test="groupid != null ">and groupid = #{groupid}
+            <if test="groupinfoGroupid != null ">and groupinfo_groupid = #{groupid}
             </if>
-            <if test="uid != null ">and uid = #{uid}
+            <if test="groupinfoUid != null ">and groupinfo_uid = #{ouid}
             </if>
-            <if test="leader != null ">and leader = #{leader}
+            <if test="groupinfoLeader != null ">and groupinfo_leader = #{leader}
             </if>
         </where>
     </select>
 
     <select id="selectGroupinfoById" parameterType="Integer" resultMap="GroupinfoResult">
         <include refid="selectGroupinfoVo"/>
-        where id = #{id}
+        where groupinfo_id = #{id}
     </select>
 
     <insert id="insertGroupinfo" parameterType="cn.bushadie.project.system.competition.domain.Groupinfo" keyProperty="id" useGeneratedKeys="true">
         insert into com_groupinfo
         <trim prefix="(" suffix=")" suffixOverrides=",">
-            <if test="id != null  ">id,
+            <if test="groupinfoId != null  ">groupinfo_id,
             </if>
-            <if test="groupid != null  ">groupid,
+            <if test="groupinfoGroupid != null  ">groupinfo_groupid,
             </if>
-            <if test="uid != null  ">uid,
+            <if test="groupinfoUid != null  ">groupinfo_uid,
             </if>
-            <if test="leader != null  ">leader,
+            <if test="groupinfoLeader != null  ">groupinfo_leader,
             </if>
         </trim>
         <trim prefix="values (" suffix=")" suffixOverrides=",">
-            <if test="id != null  ">#{id},
+            <if test="groupinfoId != null  ">#{id},
             </if>
-            <if test="groupid != null  ">#{groupid},
+            <if test="groupinfoGroupid != null  ">#{groupid},
             </if>
-            <if test="uid != null  ">#{uid},
+            <if test="groupinfoUid != null  ">#{uid},
             </if>
-            <if test="leader != null  ">#{leader},
+            <if test="groupinfoLeader != null  ">#{leader},
             </if>
         </trim>
     </insert>
@@ -63,25 +61,23 @@
     <update id="updateGroupinfo" parameterType="cn.bushadie.project.system.competition.domain.Groupinfo">
         update com_groupinfo
         <trim prefix="SET" suffixOverrides=",">
-            <if test="groupid != null  ">groupid = #{groupid},
+            <if test="groupinfoGroupid != null  ">groupinfo_groupid = #{groupid},
             </if>
-            <if test="uid != null  ">uid = #{uid},
+            <if test="groupinfoUid != null  ">groupinfo_uid = #{uid},
             </if>
-            <if test="leader != null  ">leader = #{leader},
+            <if test="groupinfoLeader != null  ">groupinfo_leader = #{leader},
             </if>
         </trim>
-        where id = #{id}
+        where groupinfo_id = #{id}
     </update>
 
     <delete id="deleteGroupinfoById" parameterType="Integer">
-        delete
-        from com_groupinfo
-        where id = #{id}
+        delete from com_groupinfo where groupinfo_id = #{id}
     </delete>
 
     <delete id="deleteGroupinfoByIds" parameterType="String">
-        delete from com_groupinfo where id in
-        <foreach item="id" collection="array" open="(" separator="," close=")">
+        delete from com_groupinfo where groupinfo_id in
+        <foreach item="groupinfoId" collection="array" open="(" separator="," close=")">
             #{id}
         </foreach>
     </delete>

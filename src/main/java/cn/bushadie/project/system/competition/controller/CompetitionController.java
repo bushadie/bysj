@@ -1,7 +1,9 @@
 package cn.bushadie.project.system.competition.controller;
 
 import cn.bushadie.common.support.Convert;
+import cn.bushadie.common.utils.StringUtils;
 import cn.bushadie.common.utils.poi.ExcelUtil;
+import cn.bushadie.common.utils.security.ShiroUtils;
 import cn.bushadie.framework.aspectj.lang.annotation.Log;
 import cn.bushadie.framework.aspectj.lang.enums.BusinessType;
 import cn.bushadie.framework.web.controller.BaseController;
@@ -11,6 +13,8 @@ import cn.bushadie.project.system.competition.domain.Competition;
 import cn.bushadie.project.system.competition.domain.Group;
 import cn.bushadie.project.system.competition.domain.Info;
 import cn.bushadie.project.system.competition.service.CompetitionService;
+import cn.bushadie.project.system.role.domain.Role;
+import cn.bushadie.project.system.user.domain.User;
 import lombok.Data;
 import org.apache.shiro.authz.annotation.RequiresPermissions;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -20,6 +24,7 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.Iterator;
 import java.util.List;
 
 /**
@@ -48,9 +53,26 @@ public class CompetitionController extends BaseController {
     @RequiresPermissions("system:competition:list")
     @PostMapping("/list")
     @ResponseBody
-    public TableDataInfo list(Competition competition) {
+    public TableDataInfo list(DataVo dataVo) {
         startPage();
+        Competition competition=dataVo.getInstance();
         List<Competition> list=competitionService.selectCompetitionList(competition);
+        // 根据姓名查找时需要
+        if(StringUtils.isNotEmpty(dataVo.getUsername())){
+            list.removeIf(i ->{
+                try {
+                    return !i.getUser().getUserName().contains(dataVo.getUsername());
+                }catch(Exception e) {
+                    return true;
+                }
+            });
+        }
+        // 如果是教师则只能呢查看自己的事务   若果是管理员则全部可以查看
+        if( competitionService.isOnlyTeacher(competition.getUid())){
+            list.removeIf(i->{
+                return !i.getUser().getUserId().equals( competition.getUid() );
+            });
+        }
         return getDataTable(list);
     }
 
@@ -82,22 +104,7 @@ public class CompetitionController extends BaseController {
     @Log(title="事务", businessType=BusinessType.INSERT)
     @PostMapping("/add")
     @ResponseBody
-    public AjaxResult addSave(Competition competition,String k,String v,String min,String max,String groupNum,DataVo data) {
-//        String[] ks=Convert.toStrArray(k);
-//        String[] vs=Convert.toStrArray(v);
-//        for(int i=0;i<ks.length;i++) {
-//            Info info=new Info();
-//            info.setK(ks[i]).setV(vs[i]);
-//            competition.getInfos().add(info);
-//        }
-//
-//        String[] mins=Convert.toStrArray(min);
-//        String[] maxs=Convert.toStrArray(max);
-//        String[] groupNums=Convert.toStrArray(groupNum);
-//        for(int i=0;i<mins.length;i++) {
-//            Group group=new Group(mins[i],maxs[i],groupNums[i]);
-//            competition.getGroups().add(group);
-//        }
+    public AjaxResult addSave(DataVo data) {
         data.getInstance();
         int result=competitionService.insertCompetition(data.getInstance());
         return toAjax(result);
@@ -107,7 +114,7 @@ public class CompetitionController extends BaseController {
      * 修改竞赛
      */
     @GetMapping("/edit/{id}")
-    public String edit(@PathVariable("id") Integer id,ModelMap mmap) {
+    public String edit(@PathVariable("id") Long id,ModelMap mmap) {
         Competition competition=competitionService.selectCompetitionById(id);
         mmap.put("competition",competition);
         return prefix+"/edit";
@@ -138,9 +145,9 @@ public class CompetitionController extends BaseController {
 
     @Data
     private class DataVo {
-        private Integer id, num;
+        private Long id, num;
         private Date startTime, endTime;
-        private String k, v, min, max, groupNum,title;
+        private String k, v, min, max, groupNum,title,username,signUpStatus;
         private String[] ks, vs, mins, maxs, groupNums;
         private Competition competition =null;
         private Competition getInstance() {
@@ -149,6 +156,7 @@ public class CompetitionController extends BaseController {
                 return competition;
             }
             competition = new Competition();
+            competition.setSignUpStatus(signUpStatus);
             ks=Convert.toStrArray(k);
             vs=Convert.toStrArray(v);
             mins=Convert.toStrArray(min);
@@ -165,12 +173,16 @@ public class CompetitionController extends BaseController {
                 Group group=new Group().setLeastString(mins[i]).setMostString(maxs[i]).setNumString(groupNums[i]).setCompetitionid(id);
                 competition.getGroups().add(group);
             }
+
+            User user=ShiroUtils.getSysUser();
+            competition.setUid(Math.toIntExact(user.getUserId()));
+//            competition.setUserName(user.getUserName());
             return competition;
         }
 
         private void check(){
             if(num==null) {
-                num=0;
+                num=0L;
             }
         }
     }

@@ -23,28 +23,28 @@ public class Group extends BaseEntity {
     /**
      *
      */
-    private Integer id;
-    private Integer competitionid;
+    private Long id;
+    private Long competitionid;
     /**
      * 最少人数
      */
-    private Integer least;
+    private Long least;
     /**
      * 最多人数
      */
-    private Integer most;
+    private Long most;
     /**
      * 组数量
      */
-    private Integer num;
+    private Long num;
     /**
      * 现有组数量
      */
-    private Integer nowNum=0;
+    private Long nowNum=0L;
     /**
      * 是否满足条件
      */
-    private Integer accept=0;
+    private Long accept=0L;
 
     private List<Groupinfo> groupinfos=new ArrayList<>();
 
@@ -52,21 +52,21 @@ public class Group extends BaseEntity {
     }
 
     public Group(String  least,String  most,String  num) {
-        this.least=Integer.parseInt(least);
-        this.most=Integer.parseInt(most);
-        this.num=Integer.parseInt(num);
+        this.least=Long.valueOf(least);
+        this.most=Long.valueOf(most);
+        this.num=Long.valueOf(num);
     }
 
     public Group setLeastString(String least){
-        this.least = Integer.valueOf(least);
+        this.least = Long.valueOf(least);
         return this;
     }
     public Group setMostString(String most){
-        this.most = Integer.valueOf(most);
+        this.most = Long.valueOf(most);
         return this;
     }
     public Group setNumString(String num){
-        this.num = Integer.valueOf(num);
+        this.num = Long.valueOf(num);
         return this;
     }
 

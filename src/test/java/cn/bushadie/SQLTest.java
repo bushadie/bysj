@@ -16,9 +16,9 @@ import org.springframework.transaction.annotation.Transactional;
 
 import javax.annotation.Resource;
 import java.util.ArrayList;
+import java.util.List;
 
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertNull;
+import static org.junit.Assert.*;
 
 /**
  * @author jdmy
@@ -28,7 +28,7 @@ import static org.junit.Assert.assertNull;
 @RunWith( SpringRunner.class)
 @Transactional(rollbackFor = Exception.class)
 public class SQLTest {
-    private static Integer id = 27;
+    private static Long id = 28L;
     @Resource
     private CompetitionMapper competitionMapper;
     @Resource
@@ -45,6 +45,10 @@ public class SQLTest {
     public void competitionMapperTest(){
         Competition item=competitionMapper.selectCompetitionById(id);
         System.out.println(item);
+    }
+    @Test
+    public void competitionMapperListTest(){
+        competitionMapper.selectCompetitionList(null);
     }
 
     @Test
@@ -82,16 +86,18 @@ public class SQLTest {
     @Test
     public void insertInfoTest(){
         ArrayList<Info> infos=new ArrayList<>(2);
-        infos.add(new Info().setK("k").setV("v").setCompetitionid(1));
-        infos.add(new Info().setK("k").setV("v").setCompetitionid(1));
+        infos.add(new Info().setK("k").setV("v").setCompetitionid(1L));
+        infos.add(new Info().setK("k").setV("v").setCompetitionid(1L));
         infoMapper.insertInfos(infos);
     }
 
     @Test
     public void insertGroupTest(){
         ArrayList<Group> groups=new ArrayList<>(2);
-        groups.add(new Group().setCompetitionid(1).setLeast(1).setMost(2).setNum(3));
-        groups.add(new Group().setCompetitionid(1).setLeast(1).setMost(2).setNum(3));
+        groups.add(new Group().setCompetitionid(1L).setLeast(1L).setMost(2L).setNum(3L));
+        groups.add(new Group().setCompetitionid(1L).setLeast(1L).setMost(2L).setNum(3L));
         groupMapper.insertGroups(groups);
     }
 }
+
+

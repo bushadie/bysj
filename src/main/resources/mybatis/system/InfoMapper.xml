@@ -5,50 +5,48 @@
 <mapper namespace="cn.bushadie.project.system.competition.mapper.InfoMapper">
 
     <resultMap type="cn.bushadie.project.system.competition.domain.Info" id="InfoResult">
-        <result property="id" column="id"/>
-        <result property="competitionid" column="competitionid"/>
-        <result property="k" column="k"/>
-        <result property="v" column="v"/>
+        <result property="id" column="info_id"/>
+        <result property="competitionid" column="info_competitionid"/>
+        <result property="k" column="info_k"/>
+        <result property="v" column="info_v"/>
     </resultMap>
 
     <sql id="selectInfoVo">
-        select id, competitionid, k, v
-        from com_info
+        select info_id, info_competitionid, info_k, info_v from com_info
     </sql>
 
-    <select id="selectInfoList" parameterType="cn.bushadie.project.system.competition.domain.Info"
-            resultMap="InfoResult">
+    <select id="selectInfoList" parameterType="cn.bushadie.project.system.competition.domain.Info" resultMap="InfoResult">
         <include refid="selectInfoVo"/>
         <where>
-            <if test="id != null ">and id = #{id}
+            <if test="id != null ">and info_id = #{id}
             </if>
-            <if test="competitionid != null ">and competitionid = #{competitionid}
+            <if test="competitionid != null ">and info_competitionid = #{competitionid}
             </if>
-            <if test="k != null  and k != '' ">and k = #{k}
+            <if test="k != null  and k != '' ">and info_k = #{k}
             </if>
-            <if test="v != null  and v != '' ">and v = #{v}
+            <if test="v != null  and v != '' ">and info_v = #{v}
             </if>
         </where>
     </select>
 
     <select id="selectInfoById" parameterType="Integer" resultMap="InfoResult">
         <include refid="selectInfoVo"/>
-        where id = #{id}
+        where info_id = #{id}
     </select>
 
-    <insert id="insertInfo" parameterType="cn.bushadie.project.system.competition.domain.Info"  keyProperty="id" useGeneratedKeys="true">
+    <insert id="insertInfo" parameterType="cn.bushadie.project.system.competition.domain.Info" keyProperty="id" useGeneratedKeys="true">
         insert into com_info
         <trim prefix="(" suffix=")" suffixOverrides=",">
-            <if test="id != null  ">id,
+            <if test="id != null  ">info_id,
             </if>
-            <if test="competitionid != null  ">competitionid,
+            <if test="competitionid != null  ">info_competitionid,
             </if>
-            <if test="k != null  and k != ''  ">k,
+            <if test="k != null  and k != ''  ">info_k,
             </if>
-            <if test="v != null  and v != ''  ">v,
+            <if test="v != null  and v != ''  ">info_v,
             </if>
         </trim>
-        <trim prefix="value (" suffix=")" suffixOverrides=",">
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
             <if test="id != null  ">#{id},
             </if>
             <if test="competitionid != null  ">#{competitionid},
@@ -62,7 +60,7 @@
 
     <insert id="insertInfos" parameterType="java.util.List">
         insert into com_info
-        (competitionid, k,  v) values
+        (info_competitionid, info_k,  info_v) values
           <foreach collection="list" index="index" item="item" separator="," >
               (
                   #{item.competitionid},
@@ -75,33 +73,31 @@
     <update id="updateInfo" parameterType="cn.bushadie.project.system.competition.domain.Info">
         update com_info
         <trim prefix="SET" suffixOverrides=",">
-            <if test="competitionid != null  ">competitionid = #{competitionid},
+            <if test="competitionid != null  ">info_competitionid = #{competitionid},
             </if>
-            <if test="k != null  and k != ''  ">k = #{k},
+            <if test="k != null  and k != ''  ">info_k = #{k},
             </if>
-            <if test="v != null  and v != ''  ">v = #{v},
+            <if test="v != null  and v != ''  ">info_v = #{v},
             </if>
         </trim>
-        where id = #{id}
+        where info_id = #{id}
     </update>
 
     <delete id="deleteInfoById" parameterType="Integer">
-        delete
-        from com_info
-        where id = #{id}
+        delete from com_info where info_id = #{id}
     </delete>
 
     <delete id="deleteInfoByIds" parameterType="String">
-        delete from com_info where id in
-        <foreach item="id" collection="array" open="(" separator="," close=")">
+        delete from com_info where info_id in
+        <foreach item="infoId" collection="array" open="(" separator="," close=")">
             #{id}
         </foreach>
     </delete>
 
-    <delete id="deleteInfoByCompetitionId"  parameterType="Integer">
+    <delete id="deleteInfoByCompetitionId"  parameterType="long">
         delete
         from com_info
-        where competitionid = #{id}
+        where info_competitionid = #{id}
     </delete>
 
 </mapper>

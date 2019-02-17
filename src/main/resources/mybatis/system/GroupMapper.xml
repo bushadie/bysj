@@ -5,69 +5,66 @@
 <mapper namespace="cn.bushadie.project.system.competition.mapper.GroupMapper">
 
     <resultMap type="cn.bushadie.project.system.competition.domain.Group" id="GroupResult">
-        <result property="id" column="id"/>
-        <result property="competitionid" column="competitionid"/>
-        <result property="least" column="least"/>
-        <result property="most" column="most"/>
-        <result property="num" column="groupnum"/>
-        <result property="nowNum" column="now_num"/>
-        <result property="accept" column="accept"/>
+        <result property="id" column="group_id"/>
+        <result property="competitionid" column="group_competitionid"/>
+        <result property="least" column="group_least"/>
+        <result property="most" column="group_most"/>
+        <result property="num" column="group_num"/>
+        <result property="nowNum" column="group_now_num"/>
+        <result property="accept" column="group_accept"/>
         <collection property="groupinfos" javaType="java.util.List" resultMap="cn.bushadie.project.system.competition.mapper.GroupinfoMapper.GroupinfoResult"/>
     </resultMap>
 
     <sql id="selectGroupVo">
-        select id, least, most, num, now_num, accept,competitionid
-        from com_group
+        select group_id, group_competitionid, group_least, group_most, group_num, group_now_num, group_accept from com_group
     </sql>
 
-    <select id="selectGroupList" parameterType="cn.bushadie.project.system.competition.domain.Group"
-            resultMap="GroupResult">
+    <select id="selectGroupList" parameterType="cn.bushadie.project.system.competition.domain.Group" resultMap="GroupResult">
         <include refid="selectGroupVo"/>
         <where>
-            <if test="id != null ">and id = #{id}
+            <if test="id != null ">and group_id = #{groupId}
             </if>
-            <if test="competitionid != null ">and competitionid = #{competitionid}
+            <if test="competitionid != null ">and group_competitionid = #{groupCompetitionid}
             </if>
-            <if test="least != null ">and least = #{least}
+            <if test="least != null ">and group_least = #{groupLeast}
             </if>
-            <if test="most != null ">and most = #{most}
+            <if test="most != null ">and group_most = #{groupMost}
             </if>
-            <if test="num != null ">and num = #{num}
+            <if test="num != null ">and group_num = #{groupNum}
             </if>
-            <if test="nowNum != null ">and now_num = #{nowNum}
+            <if test="nowNum != null ">and group_now_num = #{groupNowNum}
             </if>
-            <if test="accept != null ">and accept = #{accept}
+            <if test="accept != null ">and group_accept = #{groupAccept}
             </if>
         </where>
     </select>
 
     <select id="selectGroupById" parameterType="Integer" resultMap="GroupResult">
         <include refid="selectGroupVo"/>
-        where id = #{id}
+        where group_id = #{groupId}
     </select>
     <delete id="deleteGroupByCompetitionId">
         delete
         from com_group
-        where competitionid = #{id}
+        where group_competitionid = #{id}
     </delete>
 
-    <insert id="insertGroup" parameterType="cn.bushadie.project.system.competition.domain.Group" keyProperty="id"
-            useGeneratedKeys="true">
+    <insert id="insertGroup" parameterType="cn.bushadie.project.system.competition.domain.Group" keyProperty="id" useGeneratedKeys="true">
         insert into com_group
         <trim prefix="(" suffix=")" suffixOverrides=",">
-            <if test="id != null  ">id,
+            <if test="id != null  ">group_id,
             </if>
-            <if test="competitionid != null  ">competitionid,
+            <if test="competitionid != null  ">group_competitionid,
             </if>
-            <if test="least != null  ">least,
+            <if test="least != null  ">group_least,
             </if>
-            <if test="most != null  ">most,
+            <if test="most != null  ">group_most,
             </if>
-            <if test="num != null  ">num,
+            <if test="num != null  ">group_num,
             </if>
-            <if test="nowNum != null  ">now_num,
+            <if test="nowNum != null  ">group_now_num,
             </if>
-            <if test="accept != null  ">accept,
+            <if test="accept != null  ">group_accept,
             </if>
         </trim>
         <trim prefix="values (" suffix=")" suffixOverrides=",">
@@ -89,7 +86,7 @@
     </insert>
     <insert id="insertGroups" parameterType="java.util.List">
         insert into com_group
-        (competitionid,least,most,num) values
+        (group_competitionid,group_least,group_most,group_num) values
         <foreach collection="list" index="index" item="item" separator="," >
             (
             #{item.competitionid},
@@ -103,32 +100,30 @@
     <update id="updateGroup" parameterType="cn.bushadie.project.system.competition.domain.Group">
         update com_group
         <trim prefix="SET" suffixOverrides=",">
-            <if test="competitionid != null  ">competitionid = #{competitionid},
+            <if test="competitionid != null  ">group_competitionid = #{competitionid},
             </if>
-            <if test="least != null  ">least = #{least},
+            <if test="least != null  ">group_least = #{least},
             </if>
-            <if test="most != null  ">most = #{most},
+            <if test="most != null  ">group_most = #{most},
             </if>
-            <if test="num != null  ">num = #{num},
+            <if test="num != null  ">group_num = #{num},
             </if>
-            <if test="nowNum != null  ">now_num = #{nowNum},
+            <if test="nowNum != null  ">group_now_num = #{nowNum},
             </if>
-            <if test="accept != null  ">accept = #{accept},
+            <if test="accept != null  ">group_accept = #{accept},
             </if>
         </trim>
-        where id = #{id}
+        where group_id = #{groupId}
     </update>
 
     <delete id="deleteGroupById" parameterType="Integer">
-        delete
-        from com_group
-        where id = #{id}
+        delete from com_group where group_id = #{groupId}
     </delete>
 
     <delete id="deleteGroupByIds" parameterType="String">
-        delete from com_group where id in
-        <foreach item="id" collection="array" open="(" separator="," close=")">
-            #{id}
+        delete from com_group where group_id in
+        <foreach item="groupId" collection="array" open="(" separator="," close=")">
+            #{groupId}
         </foreach>
     </delete>
 

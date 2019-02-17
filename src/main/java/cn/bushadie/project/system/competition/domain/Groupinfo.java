@@ -11,10 +11,9 @@ import lombok.experimental.Accessors;
  * @author jdmy
  * @date 2019-01-12
  */
-@EqualsAndHashCode(callSuper=true)
 @Data
 @Accessors(chain=true)
-public class Groupinfo extends BaseEntity {
+public class Groupinfo {
     private static final long serialVersionUID=1L;
 
     /**

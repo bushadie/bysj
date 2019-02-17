@@ -5,75 +5,75 @@
 <mapper namespace="cn.bushadie.project.system.competition.mapper.CompetitionMapper">
 
     <resultMap type="cn.bushadie.project.system.competition.domain.Competition" id="CompetitionResult">
-        <result property="id" column="id"/>
-        <result property="title" column="title"/>
-        <result property="uid" column="uid"/>
-        <result property="startTime" column="start_time"/>
-        <result property="endTime" column="end_time"/>
-        <result property="num" column="comnum"/>
-        <collection property="infos" javaType="java.util.List" resultMap="InfoResult"/>
+        <result property="id" column="competition_id"/>
+        <result property="title" column="competition_title"/>
+        <result property="uid" column="competition_uid"/>
+        <result property="startTime" column="competition_start_time"/>
+        <result property="endTime" column="competition_end_time"/>
+        <result property="num" column="competition_num"/>
+        <result property="signUpStatus" column="competition_singup_status"/>
+<!--        <result property="userName" column="user_name"/>-->
+        <association property="user" resultMap="cn.bushadie.project.system.user.mapper.UserMapper.UserResult"/>
+        <collection property="infos" javaType="java.util.List" resultMap="cn.bushadie.project.system.competition.mapper.InfoMapper.InfoResult"/>
         <collection property="groups" javaType="java.util.List" resultMap="cn.bushadie.project.system.competition.mapper.GroupMapper.GroupResult"/>
-    </resultMap>
-    <resultMap id="InfoResult" type="cn.bushadie.project.system.competition.domain.Info">
-        <id property="id" column="id"/>
-        <id property="competitionid" column="competitionid"/>
-        <id property="k" column="k"/>
-        <id property="v" column="v"/>
     </resultMap>
     <sql id="selectCompetitionVo">
         select id, title, uid, start_time, end_time, num
         from com_competition
     </sql>
+    <sql id="selectAllCompetition">
+        select
+            com.competition_id, com.competition_title, com.competition_uid, com.competition_start_time, com.competition_end_time, com.competition_num,com.competition_singup_status,
+            info.info_id, info.info_competitionid, info.info_k, info.info_v,
+            gp.group_id, gp.group_competitionid, gp.group_least, gp.group_most, gp.group_num, gp.group_now_num, group_accept,
+            gpf.groupinfo_id, gpf.groupinfo_groupid, gpf.groupinfo_uid, gpf.groupinfo_leader,
+            user.user_id, user.dept_id, user.login_name, user.user_name, user.user_type, user.email, user.phonenumber, user.sex, user.avatar, user.password, user.salt, user.status, user.del_flag, user.login_ip, user.login_date, user.create_by, user.create_time, user.update_by, user.update_time, user.remark
+        from com_competition com
+                 left join com_info info on info.info_competitionid = com.competition_id
+                 left join com_group gp on gp.group_competitionid = com.competition_id
+                 left join com_groupinfo gpf on gpf.groupinfo_groupid = gp.group_id
+                 left join sys_user user on user.user_id = com.competition_uid
+    </sql>
 
     <select id="selectCompetitionList" parameterType="cn.bushadie.project.system.competition.domain.Competition"
             resultMap="CompetitionResult">
-        <include refid="selectCompetitionVo"/>
+        <include refid="selectAllCompetition"/>
         <where>
             <if test="id != null ">and id = #{id}
             </if>
-            <if test="title != null  and title != '' ">and title = #{title}
+            <if test="title != null  and title != '' ">and competition_title  LIKE CONCAT('%',#{title},'%')
             </if>
-            <if test="uid != null ">and uid = #{uid}
+<!--            <if test="uid != null ">and competition_uid = #{uid}-->
+<!--            </if>-->
+            <if test="startTime != null ">and competition_start_time = #{startTime}
             </if>
-            <if test="startTime != null ">and start_time = #{startTime}
-            </if>
-            <if test="endTime != null ">and end_time = #{endTime}
-            </if>
-            <if test="num != null ">and num = #{num}
+            <if test="endTime != null ">and competition_end_time = #{endTime}
             </if>
         </where>
-        order by id desc
+        order by com.competition_id desc
     </select>
 
-    <select id="selectCompetitionById" parameterType="Integer" resultMap="CompetitionResult">
+    <select id="selectCompetitionById" parameterType="long" resultMap="CompetitionResult">
         <!--<include refid="selectCompetitionVo"/>-->
-        select
-        com.id, com.title, com.start_time, com.end_time, com.end_time, com.num comnum,
-        info.id, info.competitionid,info.k, info.v,
-        gp.id, gp.least, gp.most, gp.num groupnum, gp.now_num, gp.accept,
-        gpf.id,gpf.groupid,gpf.uid,gpf.leader
-        from com_competition com
-        left join com_info info on info.competitionid = com.id
-        left join com_group gp on gp.competitionid = com.id
-        left join com_groupinfo gpf on gpf.groupid = gp.id
-        where com.id = #{id}
+        <include refid="selectAllCompetition"/>
+        where com.competition_id = #{id};
     </select>
 
     <insert id="insertCompetition" parameterType="cn.bushadie.project.system.competition.domain.Competition"
             keyProperty="id" useGeneratedKeys="true">
         insert into com_competition
         <trim prefix="(" suffix=")" suffixOverrides=",">
-            <if test="id != null  ">id,
+            <if test="id != null  ">competition_id,
             </if>
-            <if test="title != null  and title != ''  ">title,
+            <if test="title != null  and title != ''  ">competition_title,
             </if>
-            <if test="uid != null  ">uid,
+            <if test="uid != null  ">competition_uid,
             </if>
-            <if test="startTime != null  ">start_time,
+            <if test="startTime != null  ">competition_start_time,
             </if>
-            <if test="endTime != null  ">end_time,
+            <if test="endTime != null  ">competition_end_time,
             </if>
-            <if test="num != null  ">num,
+            <if test="num != null  ">competition_num,
             </if>
         </trim>
         <trim prefix="values (" suffix=")" suffixOverrides=",">
@@ -87,57 +87,58 @@
             </if>
             <if test="endTime != null  ">#{endTime},
             </if>
-            <if test="num != null  ">#{num},
+            <if test="signUpStatus != null  and signUpStatus != '' ">competition_singup_status = #{signUpStatus},
             </if>
         </trim>
     </insert>
 
+
     <update id="updateCompetition" parameterType="cn.bushadie.project.system.competition.domain.Competition">
         update com_competition
-        <trim prefix="SET" suffixOverrides=",">
-            <if test="title != null ">title = #{title},
+         <trim prefix="SET" suffixOverrides=",">
+             <if test="title != null  and title != '' "> competition_title = #{title},
+             </if>
+<!--            <if test="uid != null  ">competition_uid = #{uid},-->
+<!--            </if>-->
+            <if test="startTime != null  ">competition_start_time = #{startTime},
             </if>
-            <if test="uid != null  ">uid = #{uid},
+            <if test="endTime != null  ">competition_end_time = #{endTime},
             </if>
-            <if test="startTime != null  ">start_time = #{startTime},
-            </if>
-            <if test="endTime != null  ">end_time = #{endTime},
-            </if>
-            <if test="num != null  ">num = #{num},
-            </if>
+             <if test="signUpStatus != null  and signUpStatus != '' ">competition_singup_status = #{signUpStatus},
+             </if>
         </trim>
-        where id = #{id}
+        where competition_id = #{id}
     </update>
 
     <delete id="deleteCompetitionById" parameterType="Integer">
         delete
         from com_competition
-        where id = #{id}
+        where competition_id = #{id}
     </delete>
 
     <delete id="deleteCompetitionByIds" parameterType="String">
         <!--删除主表-->
-        delete from com_competition where id in
+        delete from com_competition where competition_id in
         <foreach item="item" collection="array" open="(" separator="," close=")">
             #{item}
         </foreach>;
         <!--删除附加信息表-->
-        delete from com_info where competitionid in
+        delete from com_info where info_competitionid in
         <foreach item="item" collection="array" open="(" separator="," close=")">
             #{item}
         </foreach>;
 
         <!--删除组信息-->
-        delete from com_groupinfo where groupid in
+        delete from com_groupinfo where groupinfo_groupid in
         (
-              select id from com_group where competitionid in
+              select group_id from com_group where group_competitionid in
             <foreach item="item" collection="array" open="(" separator="," close=")">
                 #{item}
             </foreach>
           );
 
         <!--删除组-->
-        delete from com_group where competitionid in
+        delete from com_group where group_competitionid in
         <foreach item="item" collection="array" open="(" separator="," close=")">
             #{item}
         </foreach>;

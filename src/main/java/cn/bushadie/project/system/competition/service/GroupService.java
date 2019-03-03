@@ -25,7 +25,7 @@ public class GroupService {
      * @param id 组数 ID
      * @return 组数 信息
      */
-    public Group selectGroupById(Integer id) {
+    public Group selectGroupById(Long id) {
         return groupMapper.selectGroupById(id);
     }
 

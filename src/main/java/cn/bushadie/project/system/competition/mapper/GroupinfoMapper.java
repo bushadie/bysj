@@ -1,6 +1,7 @@
 package cn.bushadie.project.system.competition.mapper;
 
 import cn.bushadie.project.system.competition.domain.Groupinfo;
+import org.apache.ibatis.annotations.Param;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
@@ -61,4 +62,6 @@ public interface GroupinfoMapper {
      */
     public int deleteGroupinfoByIds(String[] ids);
 
+
+    int deleteGroupinfoByGroupIdAndUserId(@Param("groupId") Long groupId,@Param("userId") Long userId);
 }

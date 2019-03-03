@@ -14,10 +14,9 @@ import java.util.List;
  * @author jdmy
  * @date 2019-01-12
  */
-@EqualsAndHashCode(callSuper=true)
 @Data
 @Accessors(chain=true)
-public class Group extends BaseEntity {
+public class Group {
     private static final long serialVersionUID=1L;
 
     /**

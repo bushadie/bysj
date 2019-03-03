@@ -19,18 +19,18 @@ public class Groupinfo {
     /**
      *
      */
-    private Integer id;
+    private Long id;
     /**
      * 属于哪个组表
      */
-    private Integer groupid;
+    private Long groupid;
     /**
      * 人员id
      */
-    private Integer uid;
+    private Long uid;
     /**
      * 是否组长
      */
-    private Integer leader;
+    private Long leaderid;
 
 }

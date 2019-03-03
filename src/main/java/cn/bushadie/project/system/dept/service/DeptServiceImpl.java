@@ -72,7 +72,7 @@ public class DeptServiceImpl implements IDeptService {
     /**
      * 对象转部门树
      *
-     * @param menuList     部门列表
+     * @param deptList     部门列表
      * @param isCheck      是否需要选中
      * @param roleDeptList 角色已存在菜单列表
      * @return

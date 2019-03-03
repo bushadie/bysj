@@ -39,7 +39,7 @@
         </where>
     </select>
 
-    <select id="selectGroupById" parameterType="Integer" resultMap="GroupResult">
+    <select id="selectGroupById" parameterType="long" resultMap="GroupResult">
         <include refid="selectGroupVo"/>
         where group_id = #{groupId}
     </select>
@@ -115,8 +115,14 @@
         </trim>
         where group_id = #{groupId}
     </update>
+    <update id="increaseGroupNum" parameterType="long">
+        update com_group set group_now_num=group_now_num+1 where group_id=${groupId}
+    </update>
+    <update id="decreaseGroupNum">
+        update com_group set group_now_num=group_now_num-1 where group_id=${groupId}
+    </update>
 
-    <delete id="deleteGroupById" parameterType="Integer">
+    <delete id="deleteGroupById" parameterType="long">
         delete from com_group where group_id = #{groupId}
     </delete>
 

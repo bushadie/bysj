@@ -13,7 +13,6 @@ import cn.bushadie.project.system.competition.domain.Competition;
 import cn.bushadie.project.system.competition.domain.Group;
 import cn.bushadie.project.system.competition.domain.Info;
 import cn.bushadie.project.system.competition.service.CompetitionService;
-import cn.bushadie.project.system.role.domain.Role;
 import cn.bushadie.project.system.user.domain.User;
 import lombok.Data;
 import org.apache.shiro.authz.annotation.RequiresPermissions;
@@ -22,9 +21,7 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.ModelMap;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.ArrayList;
 import java.util.Date;
-import java.util.Iterator;
 import java.util.List;
 
 /**
@@ -59,19 +56,11 @@ public class CompetitionController extends BaseController {
         List<Competition> list=competitionService.selectCompetitionList(competition);
         // 根据姓名查找时需要
         if(StringUtils.isNotEmpty(dataVo.getUsername())){
-            list.removeIf(i ->{
-                try {
-                    return !i.getUser().getUserName().contains(dataVo.getUsername());
-                }catch(Exception e) {
-                    return true;
-                }
-            });
+            competitionService.delCompetitionFormListByName(list,dataVo.getUsername());
         }
         // 如果是教师则只能呢查看自己的事务   若果是管理员则全部可以查看
         if( competitionService.isOnlyTeacher(competition.getUid())){
-            list.removeIf(i->{
-                return !i.getUser().getUserId().equals( competition.getUid() );
-            });
+            competitionService.delCompetitionFromListByUid(list,competition.getUid());
         }
         return getDataTable(list);
     }
@@ -145,13 +134,12 @@ public class CompetitionController extends BaseController {
 
     @Data
     private class DataVo {
-        private Long id, num;
+        private Long id;
         private Date startTime, endTime;
         private String k, v, min, max, groupNum,title,username,signUpStatus;
         private String[] ks, vs, mins, maxs, groupNums;
         private Competition competition =null;
         private Competition getInstance() {
-            check();
             if(competition!=null) {
                 return competition;
             }
@@ -163,7 +151,7 @@ public class CompetitionController extends BaseController {
             maxs=Convert.toStrArray(max);
             groupNums=Convert.toStrArray(groupNum);
 
-            competition.setId(id).setTitle(title).setNum(num)
+            competition.setId(id).setTitle(title)
                     .setStartTime(startTime).setEndTime(endTime);
             for(int i=0;i<ks.length;i++) {
                 Info info=new Info().setK(ks[i]).setV(vs[i]).setCompetitionid(id);
@@ -179,13 +167,5 @@ public class CompetitionController extends BaseController {
 //            competition.setUserName(user.getUserName());
             return competition;
         }
-
-        private void check(){
-            if(num==null) {
-                num=0L;
-            }
-        }
     }
-
-
 }

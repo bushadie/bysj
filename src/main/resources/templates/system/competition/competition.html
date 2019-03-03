@@ -102,8 +102,9 @@
                 },
                 {
                     field: 'signUpStatus',
-                    title: '状态',
+                    title: '开放状态',
                     align: 'center',
+                    sortable: true,
                     formatter: function (value, row, index) {
                         return $.table.selectDictLabel(datas, value);
                     }

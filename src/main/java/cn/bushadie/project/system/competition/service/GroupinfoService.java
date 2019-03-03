@@ -15,7 +15,7 @@ import java.util.List;
  * @date 2019-01-12
  */
 @Service
-public class GroupinfoServiceImpl {
+public class GroupinfoService {
     @Autowired
     private GroupinfoMapper groupinfoMapper;
 

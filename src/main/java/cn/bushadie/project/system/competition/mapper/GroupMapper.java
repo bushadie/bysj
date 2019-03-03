@@ -1,6 +1,7 @@
 package cn.bushadie.project.system.competition.mapper;
 
 import cn.bushadie.project.system.competition.domain.Group;
+import org.apache.ibatis.annotations.Param;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
@@ -19,7 +20,7 @@ public interface GroupMapper {
      * @param id 组数 ID
      * @return 组数 信息
      */
-    public Group selectGroupById(Integer id);
+    public Group selectGroupById(Long id);
 
     /**
      * @param id ID
@@ -68,4 +69,9 @@ public interface GroupMapper {
      * @return 结果
      */
     public int deleteGroupByIds(String[] ids);
+
+
+    public void increaseGroupNum(@Param("groupId") Long groupId);
+
+    public void decreaseGroupNum(@Param("groupId") Long groupId);
 }

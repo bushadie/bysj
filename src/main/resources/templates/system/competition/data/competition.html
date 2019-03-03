@@ -1,0 +1,305 @@
+<!DOCTYPE HTML>
+<html lang="zh" xmlns:th="http://www.thymeleaf.org" xmlns:shiro="http://www.pollix.at/thymeleaf/shiro">
+<meta charset="utf-8">
+<head th:include="include :: header"></head>
+<link th:href="@{/ajax/libs/jquery-layout/jquery.layout-latest.css}" rel="stylesheet"/>
+<link th:href="@{/ajax/libs/jquery-ztree/3.5/css/metro/zTreeStyle.css}" rel="stylesheet"/>
+<body class="gray-bg">
+
+<div class="ui-layout-west">
+    <div class="main-content">
+        <div class="box box-main">
+            <div class="box-header">
+                <div class="box-title">
+                    <i class="fa icon-grid"></i> 可报名事务
+                </div>
+                <div class="box-tools pull-right">
+                    <button type="button" class="btn btn-box-tool" id="btnRefresh" title="刷新部门"><i
+                            class="fa fa-refresh"></i></button>
+                </div>
+            </div>
+            <div class="ui-layout-content">
+                <div id="tree" class="ztree"></div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="container-div  ui-layout-center">
+    <div class="row">
+        <div class="col-sm-12 search-collapse">
+            <form id="formId">
+                <div class="select-list">
+                    <input type="hidden" id="competitionId" name="competitionId">
+                    <ul>
+                        <li>
+                            事务名称：<input type="text" name="title"/>
+                        </li>
+                        <li shiro:hasRole="admin">
+                            创建人姓名：<input type="text" name="username" />
+                        </li>
+
+                        <li>
+                            <a class="btn btn-primary btn-rounded btn-sm" onclick="$.table.search()"><i
+                                    class="fa fa-search"></i>&nbsp;搜索</a>
+                            <a class="btn btn-warning btn-rounded btn-sm" onclick="$.form.reset()"><i
+                                    class="fa fa-refresh"></i>&nbsp;重置</a>
+                        </li>
+                    </ul>
+                </div>
+            </form>
+        </div>
+        <div class="col-sm-12 ">
+            <div class="competitionInfoTemp" style="display: none">
+            </div>
+        </div>
+
+
+    <div class="btn-group-sm hidden-xs" id="toolbar" role="group">
+        <a class="btn btn-success" onclick="createLeader()"
+           shiro:hasPermission="system:competitionSignUp:add">
+            <i class="fa fa-plus"></i> 我要当组长
+        </a>
+        <a class="btn btn-primary btn-edit disabled" onclick="$.operate.edit()"
+           shiro:hasPermission="system:competitionSignUp:edit">
+            <i class="fa fa-edit"></i> 修改
+        </a>
+        <a class="btn btn-danger btn-del btn-del disabled" onclick="$.operate.removeAll()"
+           shiro:hasPermission="system:competitionSignUp:remove">
+            <i class="fa fa-remove"></i> 删除
+        </a>
+    </div>
+    <div class="col-sm-12 select-table table-striped">
+        <table id="bootstrap-table" data-mobile-responsive="true"></table>
+    </div>
+    </div>
+</div>
+<div th:include="include :: footer"></div>
+<script th:src="@{/ajax/libs/jquery-layout/jquery.layout-latest.js}"></script>
+<script th:src="@{/ajax/libs/jquery-ztree/3.5/js/jquery.ztree.all-3.5.js}"></script>
+<script th:inline="javascript">
+    var editFlag = [[${@permission.hasPermi('system:competitionSignUp:edit')}]];
+    var removeFlag = [[${@permission.hasPermi('system:competitionSignUp:remove')}]];
+    var prefix = ctx + "system/competitionSignUp/";
+    var datas = [[${@dict.getType('com_competition_status')}]];
+    $(function () {
+        $('body').layout({west__size: 185});
+        queryCompetitionList();
+        queryCompetitionTree();
+        init();
+    });
+
+    function queryCompetitionList() {
+        var options = {
+            url: prefix + "/list",
+            createUrl: prefix + "/add",
+            updateUrl: prefix + "/edit/{id}",
+            removeUrl: prefix + "/remove",
+            exportUrl: prefix + "/export",
+            sortName: "id",
+            sortOrder: "desc",
+            modalName: "竞赛",
+            search: false,
+            showExport: false,
+            columns: [{
+                // checkbox: true
+                field: 'selectItem',
+                radio: true
+            },
+                {
+                    field: 'id',
+                    title: '事务id',
+                    visible: false
+                },
+                {
+                    field: 'title',
+                    title: '事务名称',
+                    sortable: true
+                },
+                {
+                    field: 'user.userName',
+                    title: '创建人姓名',
+                    sortable: true
+                    // visible: false
+                },
+                {
+                    field: 'startTime',
+                    title: '开始时间',
+                    sortable: true
+                },
+                {
+                    field: 'endTime',
+                    title: '报名结束时间',
+                    sortable: true
+                },
+                {
+                    field: 'num',
+                    title: '总报名人数',
+                    sortable: true
+                },
+                {
+                    field: 'signUpStatus',
+                    title: '开放状态',
+                    align: 'center',
+                    sortable: true,
+                    formatter: function (value, row, index) {
+                        return $.table.selectDictLabel(datas, value);
+                    }
+                },
+                {
+                    title: '操作',
+                    align: 'center',
+                    formatter: function (value, row, index) {
+                        var actions = [];
+                        actions.push('<a class="btn btn-success btn-xs ' + editFlag + '" href="#" onclick="$.operate.edit(\'' + row.id + '\')"><i class="fa fa-edit"></i>编辑</a> ');
+                        actions.push('<a class="btn btn-danger btn-xs ' + removeFlag + '" href="#" onclick="$.operate.remove(\'' + row.id + '\')"><i class="fa fa-remove"></i>删除</a>');
+                        return actions.join('');
+                    }
+                }]
+        };
+        $.table.init(options);
+    }
+
+    function queryCompetitionTree() {
+        var url = ctx + "system/competitionSignUp/treeData";
+        var options = {
+            url: url,
+            expandLevel: 2,
+            onClick: zOnClick
+        };
+        $.tree.init(options);
+        function zOnClick(event, treeId, treeNode) {
+            $('#competitionId').val(treeNode.id);
+            $.table.search();
+            initInfo(treeNode.id)
+        }
+    }
+
+    function init() {
+        $.ajax({
+            type: 'post',
+            url: prefix + 'list',
+            success: function (data) {
+                $('#competitionId').val(data.rows[0].id);
+                $.table.search();
+                initInfo(data.rows[0].id)
+            }
+        });
+    }
+
+    /**
+     * 显示当前竞赛的相关信息
+     * @param id 当前竞赛id
+     */
+    function initInfo(id){
+        $.ajax({
+            type:'post',
+            url:prefix+'competitionInfo',
+            dataType:'json',
+            data:{'id':id},
+            success:function (data) {
+                $('.competitionInfo').remove();
+
+                addInfo('事务标题',data.competition.title);
+                addInfo('报名开始时间',data.competition.startTime);
+                addInfo('报名结束时间',data.competition.endTime);
+
+                for (const info of data.competition.infos) {
+                    addInfo(info.k,info.v)
+                }
+                for (const group of data.competition.groups) {
+                    $('.competitionInfoTemp').last().before(
+                        `
+                        <div class="col-sm-12 search-collapse competitionInfo">
+                                <div class="select-list">
+                                    <input type="hidden" name="competitionId">
+                                    <ul>
+                                        <li>
+                                            一组最少人数：<input type="text" name="title" readonly="readonly" value="${group.least}"/>
+                                        </li>
+                                        <li>
+                                            一组最多人数：<input type="text" name="username" readonly="readonly" value="${group.most}"/>
+                                        </li>
+
+                                        <li>
+                                            <a class="btn btn-primary btn-rounded btn-sm" id="${group.id}" onclick="createLeader($(this))"><i
+                                                    class="fa fa-plus"></i>&nbsp;我要当组长</a>
+                                        </li>
+                                         <li>
+                                            <a class="btn btn-danger btn-rounded btn-sm" id="${group.id}" onclick="leaveLeader($(this))"><i
+                                                    class="fa fa-remove"></i>&nbsp;不当队长了</a>
+                                        </li>
+                                    </ul>
+                                </div>
+                        </div>
+                         `
+                    )
+                }
+                function addInfo(k, v) {
+                    $('.competitionInfoTemp').last().before(
+                        `
+                            <div class="row competitionInfo">
+                                <div class="select-list">
+                                    <div class="col-sm-12 search-collapse">
+                                        <ul>
+                                            <li>
+                                                ${k}：${v}
+                                            </li>
+                                        </ul>
+                                    </div>
+                                </div>
+                            </div>
+                        `
+                    )
+                }
+            }
+        })
+    }
+
+
+
+    $('#btnRefresh').click(function () {
+        queryCompetitionTree();
+    });
+    
+    function competitionSignUp() {
+        var url = ctx + "system/competition";
+        createMenuItem(url, "部门管理");
+    }
+
+    function createLeader(obj) {
+        // let data={"competitionId":obj.attr('id')}
+        $.ajax({
+            type:'post',
+            url:prefix+'createLeader',
+            dataType: 'json',
+            data:{'groupId':obj.attr('id')},
+            success:function (data) {
+                console.log( data );
+                if( data.code!==0 ){
+                    $.modal.alertError(data.msg);
+                }else {
+                    $.modal.alertSuccess("成功当上队长");
+                }
+            }
+        })
+    }
+    function leaveLeader(obj) {
+        $.ajax({
+            type:'post',
+            url:prefix+'leaveLeader',
+            dataType: 'json',
+            data:{'groupId':obj.attr('id')},
+            success:function (data) {
+                console.log(data);
+                if( data.code!==0 ){
+                    $.modal.alertError(data.msg);
+                }else {
+                    $.modal.alertSuccess("您已不是队长");
+                }
+            }
+        })
+    }
+</script>
+</body>
+</html>

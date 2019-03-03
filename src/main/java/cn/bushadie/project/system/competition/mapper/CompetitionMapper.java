@@ -1,6 +1,7 @@
 package cn.bushadie.project.system.competition.mapper;
 
 import cn.bushadie.project.system.competition.domain.Competition;
+import org.apache.ibatis.annotations.Param;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
@@ -61,4 +62,8 @@ public interface CompetitionMapper {
      */
     public int deleteCompetitionByIds(String[] ids);
 
+    void createLeader(@Param("competitionId")Long competitionId,@Param("userId")Long userId);
+
+
+    int checkHasJoinCompetition(@Param("competitionId") Long competitionId,@Param("userId") Long userId);
 }

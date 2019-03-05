@@ -20,7 +20,7 @@ public interface GroupinfoMapper {
      * @param id 每组人员ID
      * @return 每组人员信息
      */
-    public Groupinfo selectGroupinfoById(Integer id);
+    public Groupinfo selectGroupinfoById(Long id);
 
     /**
      * 查询每组人员列表
@@ -52,7 +52,7 @@ public interface GroupinfoMapper {
      * @param id 每组人员ID
      * @return 结果
      */
-    public int deleteGroupinfoById(Integer id);
+    public int deleteGroupinfoById(Long id);
 
     /**
      * 批量删除每组人员
@@ -63,5 +63,21 @@ public interface GroupinfoMapper {
     public int deleteGroupinfoByIds(String[] ids);
 
 
-    int deleteGroupinfoByGroupIdAndUserId(@Param("groupId") Long groupId,@Param("userId") Long userId);
+    /**
+     * 把user 从队伍中删除
+     * @param groupId
+     * @param userId
+     * @return
+     */
+    public int deleteGroupinfoByGroupIdAndUserId(@Param("groupId") Long groupId,@Param("userId") Long userId);
+
+    public Long countMemberNumber(Long groupId);
+
+    /**
+     * 统计该组中还剩多少名额
+     * @param leaderid  队长id
+     * @param groupid 队组id
+     * @return 剩余数量
+     */
+    public Integer remainTeamNum(@Param("leaderid") Long leaderid,@Param("groupid") Long groupid);
 }

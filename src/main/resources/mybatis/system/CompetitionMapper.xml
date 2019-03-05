@@ -29,7 +29,8 @@
             info.info_id, info.info_competitionid, info.info_k, info.info_v,
             gp.group_id, gp.group_competitionid, gp.group_least, gp.group_most, gp.group_num, gp.group_now_num, group_accept,
             gpf.groupinfo_id, gpf.groupinfo_groupid, gpf.groupinfo_uid, gpf.groupinfo_leaderid,
-            user.user_id, user.dept_id, user.login_name, user.user_name, user.user_type, user.email, user.phonenumber, user.sex, user.avatar, user.password, user.salt, user.status, user.del_flag, user.login_ip, user.login_date, user.create_by, user.create_time, user.update_by, user.update_time, user.remark
+            user.user_id, user.dept_id, user.login_name, user.user_name, user.user_type, user.email, user.phonenumber, user.sex, user.avatar, user.password, user.salt, user.status, user.del_flag, user.login_ip, user.login_date, user.create_by, user.create_time, user.update_by, user.update_time, user.remark,
+            user.user_name  username ,gp.group_most most,gp.group_least least
         from com_competition com
                  left join com_info info on info.info_competitionid = com.competition_id
                  left join com_group gp on gp.group_competitionid = com.competition_id
@@ -45,8 +46,6 @@
             </if>
             <if test="title != null  and title != '' ">and competition_title  LIKE CONCAT('%',#{title},'%')
             </if>
-<!--            <if test="uid != null ">and competition_uid = #{uid}-->
-<!--            </if>-->
             <if test="startTime != null ">and competition_start_time = #{startTime}
             </if>
             <if test="endTime != null ">and competition_end_time = #{endTime}

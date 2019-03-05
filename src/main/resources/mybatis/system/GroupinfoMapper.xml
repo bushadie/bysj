@@ -29,9 +29,18 @@
         </where>
     </select>
 
-    <select id="selectGroupinfoById" parameterType="Integer" resultMap="GroupinfoResult">
+    <select id="selectGroupinfoById" parameterType="long" resultMap="GroupinfoResult">
         <include refid="selectGroupinfoVo"/>
         where groupinfo_id = #{id}
+    </select>
+    <select id="countMemberNumber" resultType="long">
+        select count(groupinfo_id) from com_groupinfo where groupinfo_groupid=#{groupinfo_groupid}
+    </select>
+    <select id="remainTeamNum"  resultType="Integer">
+        select
+        (select g.group_most from com_group g where g.group_id=#{groupid})
+         -
+        (select count(gi.groupinfo_id) from com_groupinfo gi where gi.groupinfo_leaderid=#{leaderid} and gi.groupinfo_groupid=#{groupid});
     </select>
 
     <insert id="insertGroupinfo" parameterType="cn.bushadie.project.system.competition.domain.Groupinfo" keyProperty="id" useGeneratedKeys="true">
@@ -71,7 +80,7 @@
         where groupinfo_id = #{id}
     </update>
 
-    <delete id="deleteGroupinfoById" parameterType="Integer">
+    <delete id="deleteGroupinfoById" parameterType="long">
         delete from com_groupinfo where groupinfo_id = #{id}
     </delete>
 

@@ -27,7 +27,8 @@
 
 <div class="container-div  ui-layout-center">
     <div class="row">
-        <div class="col-sm-12 search-collapse">
+
+        <div class="col-sm-12 search-collapse" style="display: none">
             <form id="formId">
                 <div class="select-list">
                     <input type="hidden" id="competitionId" name="competitionId">
@@ -49,29 +50,19 @@
                 </div>
             </form>
         </div>
-        <div class="col-sm-12 ">
-            <div class="competitionInfoTemp" style="display: none">
+        <div class="row">
+            <div class="col-sm-4 ">
+                <div class="competitionInfoTemp" style="display: none">
+                </div>
+            </div>
+
+
+            <div class="col-sm-5 select-table table-striped" style="width: 60%;margin-left: 3%;">
+                <table class="col-sm-5" id="bootstrap-tree-table" data-mobile-responsive="true"></table>
             </div>
         </div>
 
 
-    <div class="btn-group-sm hidden-xs" id="toolbar" role="group">
-        <a class="btn btn-success" onclick="createLeader()"
-           shiro:hasPermission="system:competitionSignUp:add">
-            <i class="fa fa-plus"></i> 我要当组长
-        </a>
-        <a class="btn btn-primary btn-edit disabled" onclick="$.operate.edit()"
-           shiro:hasPermission="system:competitionSignUp:edit">
-            <i class="fa fa-edit"></i> 修改
-        </a>
-        <a class="btn btn-danger btn-del btn-del disabled" onclick="$.operate.removeAll()"
-           shiro:hasPermission="system:competitionSignUp:remove">
-            <i class="fa fa-remove"></i> 删除
-        </a>
-    </div>
-    <div class="col-sm-12 select-table table-striped">
-        <table id="bootstrap-table" data-mobile-responsive="true"></table>
-    </div>
     </div>
 </div>
 <div th:include="include :: footer"></div>
@@ -82,18 +73,58 @@
     var removeFlag = [[${@permission.hasPermi('system:competitionSignUp:remove')}]];
     var prefix = ctx + "system/competitionSignUp/";
     var datas = [[${@dict.getType('com_competition_status')}]];
+    let userid;
+
+
     $(function () {
         $('body').layout({west__size: 185});
+        init();
+        console.log( "init="+$('#competitionId').val() );
         queryCompetitionList();
         queryCompetitionTree();
-        init();
+        getuserid();
     });
-
+    function getuserid() {
+        $.ajax({
+            url:prefix+'getuserid',
+            type:'post',
+            async: false,
+            success: function (data) {
+                userid = data;
+                console.log( 'userid='+ userid );
+            }
+        })
+    }
     function queryCompetitionList() {
-        var options = {
-            url: prefix + "/list",
+        refreshTreeTable();
+
+    }
+
+    function checkHasJoinCompetition() {
+        let result=false;
+        $.ajax({
+            async:false,
+            type:'post',
+            url: prefix+'checkHasJoinCompetition',
+            data:{'competitionid':$('#competitionId').val()},
+            success: function (data) {
+                result=data;
+            }
+        });
+        return result;
+    }
+
+    function refreshTreeTable() {
+        $('#bootstrap-tree-table').empty();
+        let joinFlag=checkHasJoinCompetition();
+        let treeTableOptions = {
+            prefix: prefix + "listfast/",
+            url: prefix + "listfast/"+$('#competitionId').val(),
             createUrl: prefix + "/add",
             updateUrl: prefix + "/edit/{id}",
+            parentCode: "leader",
+            code: "uid",
+            uniqueId: "uid",
             removeUrl: prefix + "/remove",
             exportUrl: prefix + "/export",
             sortName: "id",
@@ -107,57 +138,62 @@
                 radio: true
             },
                 {
-                    field: 'id',
-                    title: '事务id',
-                    visible: false
-                },
-                {
-                    field: 'title',
-                    title: '事务名称',
-                    sortable: true
-                },
-                {
-                    field: 'user.userName',
-                    title: '创建人姓名',
+                    field: 'username',
+                    title: '姓名',
                     sortable: true
                     // visible: false
                 },
+                // {
+                //     field: 'groupinfoid',
+                //     title: '事务id',
+                //     visible: false
+                // },
                 {
-                    field: 'startTime',
-                    title: '开始时间',
+                    field: 'least',
+                    title: '最少人数',
                     sortable: true
                 },
                 {
-                    field: 'endTime',
-                    title: '报名结束时间',
-                    sortable: true
+                    field: 'nowNum',
+                    title: '现有人数',
+                    sortable: false
+                    // visible: false
                 },
                 {
-                    field: 'num',
-                    title: '总报名人数',
+                    field: 'most',
+                    title: '最多人数',
                     sortable: true
                 },
-                {
-                    field: 'signUpStatus',
-                    title: '开放状态',
-                    align: 'center',
-                    sortable: true,
-                    formatter: function (value, row, index) {
-                        return $.table.selectDictLabel(datas, value);
-                    }
-                },
+                // {
+                //     field: 'signUpStatus',
+                //     title: '开放状态',
+                //     align: 'center',
+                //     sortable: true,
+                //     formatter: function (value, row, index) {
+                //         return $.table.selectDictLabel(datas, value);
+                //     }
+                // },
                 {
                     title: '操作',
                     align: 'center',
                     formatter: function (value, row, index) {
                         var actions = [];
-                        actions.push('<a class="btn btn-success btn-xs ' + editFlag + '" href="#" onclick="$.operate.edit(\'' + row.id + '\')"><i class="fa fa-edit"></i>编辑</a> ');
-                        actions.push('<a class="btn btn-danger btn-xs ' + removeFlag + '" href="#" onclick="$.operate.remove(\'' + row.id + '\')"><i class="fa fa-remove"></i>删除</a>');
+                        console.log( value );
+                        console.log( index );
+                        if( row.leader === 0 && joinFlag===false){
+                            actions.push('<a class="btn btn-primary btn-xs ' + editFlag + '" href="#" onclick="addTeam( \'' + row.groupinfoid + '\',\'' + row.leaderid + '\',\'' + row.competitionid + '\',\'' + row.groupid + '\')"><i class="fa fa-plus"></i>加入队伍</a>');
+                        }
+                        if( userid === row.uid && row.leaderid===userid ){
+                            actions.push('<a class="btn btn-danger btn-xs btn-rounded  ' + editFlag + '" href="#" onclick="leaveLeader( \'' + row.groupid + '\')"><i class="fa fa-remove"></i>不当组长了</a>');
+                        }else if(userid === row.uid || row.leaderid===userid ){
+                            actions.push('<a class="btn btn-danger btn-xs btn-rounded  ' + editFlag + '" href="#" onclick="quitTeam( \'' + row.groupinfoid + '\')"><i class="fa fa-remove"></i>退出队伍</a>');
+                        }
                         return actions.join('');
                     }
                 }]
         };
-        $.table.init(options);
+        treeTableOptions.url=treeTableOptions.prefix+$('#competitionId').val();
+        $.treeTable.init(treeTableOptions);
     }
 
     function queryCompetitionTree() {
@@ -172,17 +208,20 @@
             $('#competitionId').val(treeNode.id);
             $.table.search();
             initInfo(treeNode.id)
+            refreshTreeTable();
         }
     }
 
     function init() {
         $.ajax({
             type: 'post',
+            async: false,
             url: prefix + 'list',
             success: function (data) {
-                $('#competitionId').val(data.rows[0].id);
+                console.log(data );
+                $('#competitionId').val(data.rows[0].competitionid);
                 $.table.search();
-                initInfo(data.rows[0].id)
+                initInfo(data.rows[0].competitionid)
             }
         });
     }
@@ -192,6 +231,7 @@
      * @param id 当前竞赛id
      */
     function initInfo(id){
+        console.log( 'initInfo'+ id );
         $.ajax({
             type:'post',
             url:prefix+'competitionInfo',
@@ -207,7 +247,29 @@
                 for (const info of data.competition.infos) {
                     addInfo(info.k,info.v)
                 }
+                let flag =  checkHasJoinCompetition();
+                function f(id) {
+                    if( flag ){
+                        return '';
+                    }
+                    let result =
+
+                   '  <li >'+
+                   '     <a class="btn btn-primary btn-rounded btn-sm" id="'+id+'" onclick="createLeader($(this))"><i'+
+                   '             class="fa fa-plus"></i>&nbsp;报名</a>'+
+                   ' </li>'
+
+                    return result ;
+                }
+                // <li >
+                //     <a class="btn btn-primary btn-rounded btn-sm" id="${group.id}" onclick="createLeader($(this))"><i
+                //             class="fa fa-plus"></i>&nbsp;报名</a>
+                // </li>
                 for (const group of data.competition.groups) {
+                    let str = group.least + '-' + group.most + '人';
+                    if( group.least ===  group.most){
+                        str = group.least +  '人';
+                    }
                     $('.competitionInfoTemp').last().before(
                         `
                         <div class="col-sm-12 search-collapse competitionInfo">
@@ -215,20 +277,15 @@
                                     <input type="hidden" name="competitionId">
                                     <ul>
                                         <li>
-                                            一组最少人数：<input type="text" name="title" readonly="readonly" value="${group.least}"/>
+                                            人数限制：${str}
                                         </li>
-                                        <li>
-                                            一组最多人数：<input type="text" name="username" readonly="readonly" value="${group.most}"/>
+                                        <li >
+                                            需要组数：${group.num}
                                         </li>
-
-                                        <li>
-                                            <a class="btn btn-primary btn-rounded btn-sm" id="${group.id}" onclick="createLeader($(this))"><i
-                                                    class="fa fa-plus"></i>&nbsp;我要当组长</a>
+                                        <li >
+                                            现有组数：${group.nowNum}
                                         </li>
-                                         <li>
-                                            <a class="btn btn-danger btn-rounded btn-sm" id="${group.id}" onclick="leaveLeader($(this))"><i
-                                                    class="fa fa-remove"></i>&nbsp;不当队长了</a>
-                                        </li>
+                                        ${f(group.id)}
                                     </ul>
                                 </div>
                         </div>
@@ -256,19 +313,18 @@
         })
     }
 
-
-
     $('#btnRefresh').click(function () {
         queryCompetitionTree();
     });
-    
+
+
+
     function competitionSignUp() {
         var url = ctx + "system/competition";
         createMenuItem(url, "部门管理");
     }
 
     function createLeader(obj) {
-        // let data={"competitionId":obj.attr('id')}
         $.ajax({
             type:'post',
             url:prefix+'createLeader',
@@ -281,22 +337,65 @@
                 }else {
                     $.modal.alertSuccess("成功当上队长");
                 }
+                refreshTreeTable();
+                initInfo( $('#competitionId').val())
             }
         })
     }
-    function leaveLeader(obj) {
+
+    function addTeam(groupinfoId,leaderid,competitionid,groupid) {
+        console.log( 'addTeam'+groupinfoId + "  "+  leaderid+"  "+competitionid+"  "+ groupid);
+        $.ajax({
+            type:'post',
+            url: prefix+'addteam',
+            data: {
+                'groupinfoId': groupinfoId,
+                'leaderid': leaderid,
+                'competitionid':competitionid,
+                'groupid':groupid
+            },
+            success:function (data) {
+                console.log( data );
+                if( data.code===0 ){
+                    $.modal.alertSuccess('加入队伍成功');
+                }else {
+                    $.modal.alertError(data.msg)
+                }
+                refreshTreeTable()
+            }
+        })
+    }
+    function leaveLeader(groupid) {
         $.ajax({
             type:'post',
             url:prefix+'leaveLeader',
             dataType: 'json',
-            data:{'groupId':obj.attr('id')},
+            data:{'groupId':groupid},
             success:function (data) {
                 console.log(data);
                 if( data.code!==0 ){
                     $.modal.alertError(data.msg);
                 }else {
-                    $.modal.alertSuccess("您已不是队长");
+                    $.modal.alertSuccess("您已不是组长");
                 }
+                refreshTreeTable();
+                initInfo( $('#competitionId').val())
+            }
+        })
+    }
+    function quitTeam(groupinfoid) {
+        $.ajax({
+            type:'post',
+            url:prefix+'quitTeam',
+            dataType: 'json',
+            data:{'groupinfoid':groupinfoid},
+            success: function (data) {
+                if( data.code!==0 ){
+                    $.modal.alertError(data.msg);
+                }else {
+                    $.modal.alertSuccess("退出成功");
+                }
+                refreshTreeTable();
             }
         })
     }

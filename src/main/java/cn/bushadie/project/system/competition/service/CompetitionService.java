@@ -27,7 +27,7 @@ import java.util.Map;
  * @author jdmy
  * @date 2018-12-21
  */
-@Service
+@Service("competition")
 public class CompetitionService {
     @Autowired
     private CompetitionMapper competitionMapper;
@@ -129,7 +129,7 @@ public class CompetitionService {
             return 1;
         }
         // 判断是否已经参加了这个事务
-        if( competitionMapper.checkHasJoinCompetition(group.getCompetitionid(),userId) > 0 ){
+        if( checkHasJoinCompetition(group.getCompetitionid(),userId)){
             return 2;
         }
         // 成功当上组长
@@ -239,5 +239,39 @@ public class CompetitionService {
             trees.get(0).put("checked",true);
         }
         return trees;
+    }
+
+    /**
+     * 加入队伍
+     * @param groupinfoId
+     * @param leaderid
+     * @param userId
+     * @return
+     *          0  成功
+     *          1 已经加入,请先退出
+     *          2 人数已满
+     *          3 未知异常
+     */
+    @Transactional
+    public int addteam(Long groupinfoId,Long leaderid,Long userId,Long competitionid,Long groupid) {
+        // 检查是否已经加入其他组
+        if( checkHasJoinCompetition(competitionid,userId) ){
+            return 1;
+        }
+        // 检查该组人数是否达到上限
+        Integer num=groupinfoMapper.remainTeamNum(leaderid,groupid);
+        if(num==null) {
+            return 3;
+        }
+        if( num <=0 ){
+            return 2;
+        }
+        Groupinfo groupinfo=new Groupinfo().setUid(userId).setLeaderid(leaderid).setGroupid(groupid);
+        groupinfoMapper.insertGroupinfo(groupinfo);
+        return 0;
+    }
+
+    public boolean checkHasJoinCompetition(Long competitionid,Long userId){
+        return competitionMapper.checkHasJoinCompetition(competitionid,userId) > 0;
     }
 }

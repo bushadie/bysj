@@ -25,7 +25,7 @@ public class GroupinfoService {
      * @param id 每组人员ID
      * @return 每组人员信息
      */
-    public Groupinfo selectGroupinfoById(Integer id) {
+    public Groupinfo selectGroupinfoById(Long id) {
         return groupinfoMapper.selectGroupinfoById(id);
     }
 
@@ -69,4 +69,26 @@ public class GroupinfoService {
         return groupinfoMapper.deleteGroupinfoByIds(Convert.toStrArray(ids));
     }
 
+    /**
+     * 统计该组中有多少人
+     *
+     * @param groupid groupid
+     * @return 结果
+     */
+    public Long countMemberNumber(Long groupid){
+        return groupinfoMapper.countMemberNumber(groupid);
+    }
+    /**
+     * 统计该组中还剩多少名额
+     * @param leaderid  队长id
+     * @param groupid 队组id
+     * @return 剩余数量
+     */
+    public int remainTeamNum(Long groupid,Long leaderid){
+        return groupinfoMapper.remainTeamNum(groupid,leaderid);
+    }
+
+    public void quitTeam(Long groupinfoId) {
+        groupinfoMapper.deleteGroupinfoById(groupinfoId);
+    }
 }

@@ -1,5 +1,8 @@
 package cn.bushadie.sqltest;
 
+import cn.bushadie.project.system.competition.domain.Groupinfo;
+import cn.bushadie.project.system.competition.mapper.GroupMapper;
+import cn.bushadie.project.system.competition.mapper.GroupinfoMapper;
 import cn.bushadie.project.system.competition.service.GroupinfoService;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -18,6 +21,8 @@ import org.springframework.transaction.annotation.Transactional;
 public class GroupinfoTest {
     @Autowired
     private GroupinfoService groupinfoService;
+    @Autowired
+    private GroupinfoMapper groupinfoMapper;
 
     @Test
     public void countMemberNumber(){
@@ -39,5 +44,15 @@ public class GroupinfoTest {
             e.printStackTrace();
         }
         System.out.println("num = "+num);
+    }
+
+    @Test
+    public void changeLeaderId(){
+        groupinfoMapper.changeLeaderId(51L,2L);
+    }
+
+    @Test
+    public void selectGroupinfoList(){
+        groupinfoMapper.selectGroupinfoList(new Groupinfo());
     }
 }

@@ -2,9 +2,11 @@ package cn.bushadie.project.system.competition.service;
 
 import cn.bushadie.common.support.Convert;
 import cn.bushadie.project.system.competition.domain.Groupinfo;
+import cn.bushadie.project.system.competition.mapper.CompetitionMapper;
 import cn.bushadie.project.system.competition.mapper.GroupinfoMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 
@@ -18,7 +20,8 @@ import java.util.List;
 public class GroupinfoService {
     @Autowired
     private GroupinfoMapper groupinfoMapper;
-
+    @Autowired
+    private CompetitionMapper competitionMapper;
     /**
      * 查询每组人员信息
      *
@@ -88,7 +91,9 @@ public class GroupinfoService {
         return groupinfoMapper.remainTeamNum(groupid,leaderid);
     }
 
-    public void quitTeam(Long groupinfoId) {
+    @Transactional
+    public void quitTeam(Long competitionid,Long groupinfoId) {
         groupinfoMapper.deleteGroupinfoById(groupinfoId);
+        competitionMapper.decreaseCompetitionNum(competitionid);
     }
 }

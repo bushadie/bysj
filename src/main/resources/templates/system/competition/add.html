@@ -14,13 +14,13 @@
         <div class="form-group">
             <label class="col-sm-3 control-label">开始时间：</label>
             <div class="col-sm-8">
-                <input  name="startTime" class="form-control  time-input" type="text">
+                <input  name="startTime" id="startTime"  class="form-control  time-input " type="text">
             </div>
         </div>
         <div class="form-group">
             <label class="col-sm-3 control-label">报名结束时间：</label>
             <div class="col-sm-8">
-                <input  name="endTime" class="form-control  time-input" type="text">
+                <input  name="endTime" id="endTime"  class="form-control  time-input" type="text">
             </div>
         </div>
         <div class="form-group">
@@ -41,7 +41,17 @@
         </div>
 
     <hr>
+        <div class="form-group">
+            <label class="col-sm-3 control-label">开放范围(默认全部开放)：</label>
+            <div class="col-sm-8">
+                <select id="post" name="post" class="form-control select2-hidden-accessible" multiple="">
+                    <option th:each="dept:${depts}" th:value="${dept.deptId}" th:text="${dept.deptName}"></option>
+                </select>
 
+            </div>
+        </div>
+
+    <hr>
         <div class="form-group">
             <label class="col-sm-3 control-label" style="text-align: left">最少人数：</label>
             <label class="col-sm-3 control-label" style="text-align: left">最多人数：</label>
@@ -78,6 +88,7 @@
     </form>
 </div>
 <div th:include="include::footer"></div>
+<script th:src="@{/ajax/libs/select/select2.js}"></script>
 <script type="text/javascript" src="/ruoyi/competition.js"></script>
 <script type="text/javascript">
     function submitHandler() {

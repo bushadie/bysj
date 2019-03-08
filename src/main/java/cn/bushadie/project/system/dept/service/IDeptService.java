@@ -90,4 +90,18 @@ public interface IDeptService {
      * @return 结果
      */
     public String checkDeptNameUnique(Dept dept);
+
+    /**
+     * id所属的部门以及所有子部门
+     * @param ids 用逗号分割的id
+     * @return  id所属的部门以及所有子部门
+     */
+    public List<Dept> selectAllDeptByIds(String ids);
+
+    /**
+     * id所属的部门以及所有子部门
+     * @param id id
+     * @return
+     */
+    public List<Dept> selectAllDeptByIds(Long id);
 }

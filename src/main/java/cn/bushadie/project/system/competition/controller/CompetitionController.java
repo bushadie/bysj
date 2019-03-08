@@ -12,12 +12,17 @@ import cn.bushadie.framework.web.page.TableDataInfo;
 import cn.bushadie.project.system.competition.domain.Competition;
 import cn.bushadie.project.system.competition.domain.Group;
 import cn.bushadie.project.system.competition.domain.Info;
+import cn.bushadie.project.system.competition.mapper.LimitMapper;
 import cn.bushadie.project.system.competition.service.CompetitionService;
+import cn.bushadie.project.system.competition.service.LimitService;
+import cn.bushadie.project.system.dept.domain.Dept;
+import cn.bushadie.project.system.dept.service.DeptServiceImpl;
 import cn.bushadie.project.system.user.domain.User;
 import lombok.Data;
 import org.apache.shiro.authz.annotation.RequiresPermissions;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.ui.ModelMap;
 import org.springframework.web.bind.annotation.*;
 
@@ -37,6 +42,10 @@ public class CompetitionController extends BaseController {
 
     @Autowired
     private CompetitionService competitionService;
+    @Autowired
+    private DeptServiceImpl deptService;
+    @Autowired
+    private LimitService limitService;
 
     @RequiresPermissions("system:competition:view")
     @GetMapping()
@@ -51,7 +60,7 @@ public class CompetitionController extends BaseController {
     @PostMapping("/list")
     @ResponseBody
     public TableDataInfo list(DataVo dataVo) {
-        startPage();
+//        startPage();
         Competition competition=dataVo.getInstance();
         List<Competition> list=competitionService.selectCompetitionList(competition);
         // 根据姓名查找时需要
@@ -62,6 +71,9 @@ public class CompetitionController extends BaseController {
         if( competitionService.isOnlyTeacher(competition.getUid())){
             competitionService.delCompetitionFromListByUid(list,competition.getUid());
         }
+
+        list=competitionService.sortList(list,dataVo.orderByColumn,dataVo.isAsc);
+        list=competitionService.delCompetitionFormListByPage(list,dataVo.pageSize,dataVo.pageNum);
         return getDataTable(list);
     }
 
@@ -81,8 +93,10 @@ public class CompetitionController extends BaseController {
     /**
      * 新增竞赛
      */
+    @RequiresPermissions("system:competition:add")
     @GetMapping("/add")
-    public String add() {
+    public String add(ModelMap mmap) {
+        mmap.put("depts",deptService.selectDeptList(new Dept()));
         return prefix+"/add";
     }
 
@@ -95,7 +109,7 @@ public class CompetitionController extends BaseController {
     @ResponseBody
     public AjaxResult addSave(DataVo data) {
         data.getInstance();
-        int result=competitionService.insertCompetition(data.getInstance());
+        int result=competitionService.insertCompetition(data.getInstance(),data.getPosts());
         return toAjax(result);
     }
 
@@ -106,6 +120,7 @@ public class CompetitionController extends BaseController {
     public String edit(@PathVariable("id") Long id,ModelMap mmap) {
         Competition competition=competitionService.selectCompetitionById(id);
         mmap.put("competition",competition);
+        mmap.put("depts",deptService.selectDeptList(new Dept()));
         return prefix+"/edit";
     }
 
@@ -118,7 +133,7 @@ public class CompetitionController extends BaseController {
     @ResponseBody
     public AjaxResult editSave(DataVo data) {
         Competition competition=data.getInstance();
-        return toAjax(competitionService.updateCompetition(competition));
+        return toAjax(competitionService.updateCompetition(competition,data.posts));
     }
 
     /**
@@ -136,9 +151,11 @@ public class CompetitionController extends BaseController {
     private class DataVo {
         private Long id;
         private Date startTime, endTime;
-        private String k, v, min, max, groupNum,title,username,signUpStatus;
-        private String[] ks, vs, mins, maxs, groupNums;
+        private String k, v, min, max, groupNum,title,username,signUpStatus,post;
+        private String[] ks, vs, mins, maxs, groupNums,posts;
         private Competition competition =null;
+        private Integer pageNum,pageSize;
+        private String orderByColumn,isAsc;
         private Competition getInstance() {
             if(competition!=null) {
                 return competition;
@@ -147,6 +164,7 @@ public class CompetitionController extends BaseController {
             competition.setSignUpStatus(signUpStatus);
             ks=Convert.toStrArray(k);
             vs=Convert.toStrArray(v);
+            posts=Convert.toStrArray(post);
             mins=Convert.toStrArray(min);
             maxs=Convert.toStrArray(max);
             groupNums=Convert.toStrArray(groupNum);
@@ -164,7 +182,6 @@ public class CompetitionController extends BaseController {
 
             User user=ShiroUtils.getSysUser();
             competition.setUid(Math.toIntExact(user.getUserId()));
-//            competition.setUserName(user.getUserName());
             return competition;
         }
     }

@@ -103,8 +103,29 @@ public class DateUtils extends org.apache.commons.lang3.time.DateUtils {
         }
     }
 
-    private static SimpleDateFormat formatter_yyyy_MM_dd = new SimpleDateFormat("yyyy-MM-dd");
-    public static String getyyyy_mm_dd(Date date){
+    private static SimpleDateFormat formatter_yyyy_MM_dd = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+    public static String getDateTime(Date date){
         return formatter_yyyy_MM_dd.format(date);
+    }
+
+    /**
+     * 是否在时间段内
+     * @param before
+     * @param after
+     * @return  0  在事件段
+     *          -1  早于时间段
+     *          +1  晚于时间段
+     */
+    public static int isBetween(Date before,Date after){
+        Date now = new Date();
+        boolean f1=before.before(now);
+        boolean f2=now.before(after);
+        if( f1 && f2 ){
+            return 0;
+        }
+        if( !f1 ){
+            return -1;
+        }
+        return 1;
     }
 }

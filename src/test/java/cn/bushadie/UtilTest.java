@@ -23,4 +23,9 @@ public class UtilTest {
         SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd");
         System.out.println("2  " + formatter.format(date));
     }
+
+    @Test
+    public void f1(){
+        System.out.println(new Date());
+    }
 }

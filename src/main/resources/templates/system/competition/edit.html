@@ -47,6 +47,16 @@
         </div>
     <hr>
         <div class="form-group">
+            <label class="col-sm-3 control-label">开放范围(默认全部开放)：</label>
+            <div class="col-sm-8">
+                <select id="post" name="post" class="form-control select2-hidden-accessible" multiple="">
+                    <option th:each="dept:${depts}" th:value="${dept.deptId}" th:text="${dept.deptName}" th:selected="${competition.haveDept(dept.deptId)}"></option>
+                </select>
+
+            </div>
+        </div>
+    <hr>
+        <div class="form-group">
             <label class="col-sm-3 control-label" style="text-align: left">最少人数：</label>
             <label class="col-sm-3 control-label" style="text-align: left">最多人数：</label>
             <label class="col-sm-3 control-label" style="text-align: left">组数：</label>
@@ -93,6 +103,7 @@
     </form>
 </div>
 <div th:include="include::footer"></div>
+<script th:src="@{/ajax/libs/select/select2.js}"></script>
 <script type="text/javascript" src="/ruoyi/competition.js"></script>
 <script type="text/javascript">
     function submitHandler() {

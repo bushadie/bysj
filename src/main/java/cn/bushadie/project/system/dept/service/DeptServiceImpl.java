@@ -1,11 +1,9 @@
 package cn.bushadie.project.system.dept.service;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 import cn.bushadie.common.constant.UserConstants;
+import cn.bushadie.common.support.Convert;
 import cn.bushadie.common.utils.StringUtils;
 import cn.bushadie.common.utils.security.ShiroUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -210,4 +208,67 @@ public class DeptServiceImpl implements IDeptService {
         }
         return UserConstants.DEPT_NAME_UNIQUE;
     }
+
+    /**
+     * id所属的部门以及所有子部门
+     * @param deptIds 用逗号分割的id
+     * @return id所属的部门以及所有子部门
+     */
+    @Override
+    public List<Dept> selectAllDeptByIds(String deptIds) {
+        if( deptIds==null || "".equals(deptIds) || ",".equals(deptIds) ){
+            return selectAllDeptByIds(new String[0]);
+        }
+        return selectAllDeptByIds(Convert.toStrArray(deptIds));
+    }
+
+    /**
+     * id所属的部门以及所有子部门
+     * @param deptIds
+     * @return
+     */
+    public List<Dept> selectAllDeptByIds(String[] deptIds){
+        List<Dept> deptList=selectDeptList(new Dept());
+        if(deptIds.length==0) {
+            return deptList;
+        }
+        ArrayList<Dept> depts=new ArrayList<>(deptIds.length);
+        for(String id: deptIds) {
+            Dept dept=deptMapper.selectDeptById(Long.valueOf(id));
+            depts.add(dept);
+        }
+        HashMap<String,List<Long>> map=new HashMap<>(deptList.size()*4);
+        HashMap<Long,Dept> deptMap=new HashMap<>(deptList.size());
+        // 得到对应dept的所有下属 deptId
+        for(Dept dept: deptList) {
+            deptMap.put(dept.getDeptId(),dept);
+            String[] tps=Convert.toStrArray(dept.getAncestors()+","+dept.getDeptId());
+            for(String tp: tps) {
+                map.computeIfAbsent(tp,k->new ArrayList<>());
+                map.get(tp).add(dept.getDeptId());
+            }
+        }
+        HashSet<Dept> deptSet=new HashSet<>();
+        for(Dept dept: depts) {
+            List<Long> longs=map.get(dept.getDeptId().toString());
+            for(Long tp: longs) {
+                deptSet.add( deptMap.get(tp) );
+            }
+        }
+
+        return new ArrayList<>(deptSet);
+    }
+
+    /**
+     * id所属的部门以及所有子部门
+     *
+     * @param deptId id
+     * @return
+     */
+    @Override
+    public List<Dept> selectAllDeptByIds(Long deptId) {
+        return selectAllDeptByIds(deptId.toString());
+    }
+
+
 }

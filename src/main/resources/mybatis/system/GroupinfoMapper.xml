@@ -18,13 +18,13 @@
     <select id="selectGroupinfoList" parameterType="cn.bushadie.project.system.competition.domain.Groupinfo" resultMap="GroupinfoResult">
         <include refid="selectGroupinfoVo"/>
         <where>
-            <if test="groupinfoId != null ">and groupinfo_id = #{id}
+            <if test="id != null ">and groupinfo_id = #{id}
             </if>
-            <if test="groupinfoGroupid != null ">and groupinfo_groupid = #{groupid}
+            <if test="groupid != null ">and groupinfo_groupid = #{groupid}
             </if>
-            <if test="groupinfoUid != null ">and groupinfo_uid = #{ouid}
+            <if test="uid != null ">and groupinfo_uid = #{uid}
             </if>
-            <if test="groupinfoLeader != null ">and groupinfo_leaderid = #{leader}
+            <if test="leaderid != null ">and groupinfo_leaderid = #{leaderid}
             </if>
         </where>
     </select>
@@ -78,6 +78,9 @@
             </if>
         </trim>
         where groupinfo_id = #{id}
+    </update>
+    <update id="changeLeaderId">
+        update com_groupinfo set groupinfo_leaderid=${leaderId} where groupinfo_id=${groupInfoId};
     </update>
 
     <delete id="deleteGroupinfoById" parameterType="long">

@@ -1,0 +1,88 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="cn.bushadie.project.system.competition.mapper.LimitMapper">
+
+    <resultMap type="cn.bushadie.project.system.competition.domain.Limit" id="LimitResult">
+        <result property="id" column="limit_id"/>
+        <result property="competitionid" column="limit_competitionid"/>
+        <result property="deptid" column="limit_deptid"/>
+    </resultMap>
+
+    <sql id="selectLimitVo">
+        select limit_id, limit_competitionid, limit_deptid
+        from com_limit
+    </sql>
+
+    <select id="selectLimitList" parameterType="cn.bushadie.project.system.competition.domain.Limit" resultMap="LimitResult">
+        <include refid="selectLimitVo"/>
+        <where>
+            <if test="id != null ">and limit_id = #{id}
+            </if>
+            <if test="competitionid != null ">and limit_competitionid = #{competitionid}
+            </if>
+            <if test="deptid != null ">and limit_deptid = #{deptid}
+            </if>
+        </where>
+    </select>
+
+    <select id="selectLimitById" parameterType="Long" resultMap="LimitResult">
+        <include refid="selectLimitVo"/>
+        where limit_id = #{id}
+    </select>
+    <select id="selectLimitByCompetitionId" resultType="cn.bushadie.project.system.competition.domain.Limit">
+        <include refid="selectLimitVo"/>
+        where limit_competitionid = #{competitionid}
+    </select>
+
+    <insert id="insertLimit" parameterType="cn.bushadie.project.system.competition.domain.Limit" keyProperty="id" useGeneratedKeys="true">
+        insert into com_limit
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="id != null  ">limit_id,
+            </if>
+            <if test="competitionid != null  ">limit_competitionid,
+            </if>
+            <if test="deptid != null  ">limit_deptid,
+            </if>
+        </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="id != null  ">#{id},
+            </if>
+            <if test="competitionid != null  ">#{competitionid},
+            </if>
+            <if test="deptid != null  ">#{deptid},
+            </if>
+        </trim>
+    </insert>
+
+    <update id="updateLimit" parameterType="cn.bushadie.project.system.competition.domain.Limit">
+        update com_limit
+        <trim prefix="SET" suffixOverrides=",">
+            <if test="competitionid != null  ">limit_competitionid = #{competitionid},
+            </if>
+            <if test="deptid != null  ">limit_deptid = #{deptid},
+            </if>
+        </trim>
+        where limit_id = #{id}
+    </update>
+
+    <delete id="deleteLimitById" parameterType="Long">
+        delete
+        from com_limit
+        where limit_id = #{id}
+    </delete>
+
+    <delete id="deleteLimitByIds" parameterType="String">
+        delete from com_limit where limit_id in
+        <foreach item="limitId" collection="array" open="(" separator="," close=")">
+            #{id}
+        </foreach>
+    </delete>
+    <delete id="deleteLimitByCompetitionId">
+        delete
+        from com_limit
+        where limit_competitionid = #{id}
+    </delete>
+
+</mapper>

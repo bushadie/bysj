@@ -3,17 +3,11 @@ package cn.bushadie.project.system.competition.domain;
 
 import cn.bushadie.common.utils.DateUtils;
 import cn.bushadie.framework.aspectj.lang.annotation.Excel;
-import cn.bushadie.framework.web.domain.BaseEntity;
 import cn.bushadie.project.system.user.domain.User;
-import cn.hutool.core.date.DateUtil;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import lombok.Data;
-import lombok.EqualsAndHashCode;
 import lombok.experimental.Accessors;
-import org.apache.commons.lang3.time.DateFormatUtils;
 
-import java.text.DateFormat;
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -60,25 +54,39 @@ public class Competition {
 
     /**
      * 报名状态
+     * 0=关闭报名,1=正常开放,2=还未开放,3=已经结束
      */
-    @Excel(name="报名状态" ,readConverterExp="0=关闭报名,1=正常开放")
+    @Excel(name="报名状态" ,readConverterExp="0=关闭报名,1=正常开放,2=还未开放,3=已经结束")
     private String signUpStatus;
     private List<Info> infos=new ArrayList<>();
 
     private List<Group> groups=new ArrayList<>();
 
+    private List<Limit> limits=new ArrayList<>();
+
     public String  simpleStartTime(){
         try {
-            return DateUtils.getyyyy_mm_dd(startTime);
+            return DateUtils.getDateTime(startTime);
         }catch(Exception e) {
             return "";
         }
     }
     public String  simpleEndTime(){
         try {
-            return DateUtils.getyyyy_mm_dd(endTime);
+            return DateUtils.getDateTime(endTime);
         }catch(Exception e) {
             return "";
         }
+    }
+    public boolean haveDept(Long deptId){
+        for(Limit limit: limits) {
+            if( limit.getDeptid().equals(deptId) ){
+                return true;
+            }
+        }
+        return false;
+    }
+    public String getUserName(){
+        return user.getUserName();
     }
 }

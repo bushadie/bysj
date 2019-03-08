@@ -80,4 +80,6 @@ public interface GroupinfoMapper {
      * @return 剩余数量
      */
     public Integer remainTeamNum(@Param("leaderid") Long leaderid,@Param("groupid") Long groupid);
+
+    public void changeLeaderId(@Param("groupInfoId") Long groupInfoId,@Param("leaderId") Long leaderId);
 }

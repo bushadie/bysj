@@ -1,6 +1,5 @@
 package cn.bushadie.project.system.competition.controller;
 
-import cn.bushadie.common.utils.StringUtils;
 import cn.bushadie.framework.web.controller.BaseController;
 import cn.bushadie.framework.web.domain.AjaxResult;
 import cn.bushadie.framework.web.page.TableDataInfo;
@@ -9,13 +8,10 @@ import cn.bushadie.project.system.competition.domain.Group;
 import cn.bushadie.project.system.competition.domain.Groupinfo;
 import cn.bushadie.project.system.competition.service.CompetitionService;
 import cn.bushadie.project.system.competition.service.GroupinfoService;
-import cn.bushadie.project.system.user.domain.User;
 import cn.bushadie.project.system.user.service.UserServiceImpl;
-import lombok.Builder;
 import lombok.Data;
 import lombok.experimental.Accessors;
 import org.apache.shiro.authz.annotation.RequiresPermissions;
-import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.ModelMap;
@@ -53,31 +49,29 @@ public class CompetitionSignUpController extends BaseController {
     @RequiresPermissions("system:competitionSignUp:list")
     @PostMapping("/list")
     @ResponseBody
-    public TableDataInfo list(DataVo dataVo) {
-//    public List<TreeVo> list(DataVo dataVo) {
-        startPage();
-        Competition competition=dataVo.getInstance();
-        List<Competition> list=competitionService.selectCompetitionList(competition);
-        // 根据姓名查找时需要
-        if(StringUtils.isNotEmpty(dataVo.getUsername())){
-            competitionService.delCompetitionFormListByName(list,dataVo.getUsername());
-        }
-//        ArrayList<Competition> result = new ArrayList<>(1);
-//        result.add(list.get(0));
-        List<TreeVo> treeVoInstances=getTreeVoInstances(list.get(0).getGroups());
-        TreeVo treeVo=new TreeVo().setUid(88888L).setLeaderid(0L);
-//        treeVoInstances.add(treeVo);
-        return getDataTable( treeVoInstances );
-//        return treeVoInstances;
+    public TableDataInfo list() {
+        List<Competition> list=competitionService.selectCompetitionListOpen();
+        competitionService.delCompetitionFormListNotStart(list);
+        competitionService.delCompetitionFormListByDeptId(list,getSysUser());
+        return getDataTable( list );
     }
 
+
+    /**
+     * 当前user可参加的competition列表
+     */
+    @RequiresPermissions("system:competitionSignUp:view")
+    @GetMapping("/treeData")
+    @ResponseBody
+    public List<Map<String,Object>> treeData() {
+        List<Map<String,Object>> tree=competitionService.selectCompetitionTree(getSysUser());
+        return tree;
+    }
 
     @RequiresPermissions("system:competitionSignUp:list")
     @GetMapping("/listfast/{competitionid}")
     @ResponseBody
     public List<TreeVo> listfast(@PathVariable("competitionid") Long competitionid) {
-        //    public List<TreeVo> list(DataVo dataVo) {
-        startPage();
         Competition competition=new Competition().setId(competitionid);
         List<Competition> list=competitionService.selectCompetitionList(competition);
         List<TreeVo> treeVoInstances=getTreeVoInstances(list.get(0).getGroups());
@@ -127,16 +121,23 @@ public class CompetitionSignUpController extends BaseController {
         return error("您不是队长");
     }
 
+
     /**
-     * 加载竞赛列表
+     * 组长从 userId 转给 uid
+     * @param groupId
+     * @param uid
+     * @return
      */
-    @RequiresPermissions("system:competitionSignUp:view")
-    @GetMapping("/treeData")
+    @RequiresPermissions("system:competitionSignUp:edit")
+    @PostMapping("/steppedDown")
     @ResponseBody
-    public List<Map<String,Object>> treeData() {
-        List<Map<String,Object>> tree=competitionService.selectCompetitionTree();
-        return tree;
+    public AjaxResult steppedDown(Long groupId,Long uid){
+        competitionService.steppedDown(groupId,getUserId(),uid);
+        return success();
     }
+
+
+
     @RequiresPermissions("system:competitionSignUp:view")
     @PostMapping("/checkHasJoinCompetition")
     @ResponseBody
@@ -168,19 +169,11 @@ public class CompetitionSignUpController extends BaseController {
     @RequiresPermissions("system:competitionSignUp:edit")
     @PostMapping("/quitTeam")
     @ResponseBody
-    public AjaxResult quitTeam(Long groupinfoid) {
-        groupinfoService.quitTeam(groupinfoid);
+    public AjaxResult quitTeam(Long competitionid,Long groupinfoid) {
+        groupinfoService.quitTeam(competitionid,groupinfoid);
         return success();
     }
 
-    /**
-     * 队伍类型菜单
-     */
-    @GetMapping("/tree/{competitionId}")
-    public String tree(@PathVariable Long competitionId,ModelMap map){
-
-        return "tree";
-    }
 
     @Data
     private class DataVo {

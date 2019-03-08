@@ -23,7 +23,7 @@ public class UserTest {
 
     @Test
     public void selectUserById(){
-        User user=userMapper.selectUserById((long)3);
+        User user=userMapper.selectUserById((long)1);
         System.out.println(user);
     }
 }

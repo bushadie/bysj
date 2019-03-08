@@ -31,6 +31,15 @@ public interface CompetitionMapper {
     public List<Competition> selectCompetitionList(Competition competition);
 
     /**
+     * 查询 开放的竞赛列表 (signUpStatus=1 正常开放     0 关闭)
+     * @return
+     */
+    public List<Competition> selectCompetitionListOpen();
+
+    public void decreaseCompetitionNum(Long id);
+    public void increaseCompetitionNum(Long id);
+
+    /**
      * 新增竞赛
      *
      * @param competition 竞赛信息
@@ -47,6 +56,17 @@ public interface CompetitionMapper {
     public int updateCompetition(Competition competition);
 
     /**
+     * 设置competition为未开始状态
+     * @param id  competitionid
+     */
+    public void setCompetitionEarly(Long id);
+
+    /**
+     * 设置competition为未结束状态
+     * @param id  competitionid
+     */
+    public void setCompetitionLate(Long id);
+    /**
      * 删除竞赛
      *
      * @param id 竞赛ID
@@ -62,8 +82,12 @@ public interface CompetitionMapper {
      */
     public int deleteCompetitionByIds(String[] ids);
 
-    void createLeader(@Param("competitionId")Long competitionId,@Param("userId")Long userId);
 
-
+    /**
+     * 判断是否已经加入了这个这个 competition
+     * @param competitionId
+     * @param userId
+     * @return
+     */
     int checkHasJoinCompetition(@Param("competitionId") Long competitionId,@Param("userId") Long userId);
 }

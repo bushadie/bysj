@@ -71,7 +71,7 @@ public interface GroupinfoMapper {
      */
     public int deleteGroupinfoByGroupIdAndUserId(@Param("groupId") Long groupId,@Param("userId") Long userId);
 
-    public Long countMemberNumber(Long groupId);
+    public Long countGroupMemberNumber(@Param("groupId")Long groupId,@Param("leaderId") Long leaderId);
 
     /**
      * 统计该组中还剩多少名额

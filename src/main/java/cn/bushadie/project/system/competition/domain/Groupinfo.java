@@ -33,4 +33,8 @@ public class Groupinfo {
      */
     private Long leaderid;
 
+    public boolean isLeader(){
+        return leaderid.equals(uid);
+    }
+
 }

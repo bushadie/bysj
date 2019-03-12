@@ -3,6 +3,7 @@ package cn.bushadie.project.system.user.service;
 import cn.bushadie.project.system.user.domain.User;
 
 import java.util.List;
+import java.util.Map;
 
 /**
  * 用户 业务层
@@ -17,6 +18,13 @@ public interface IUserService {
      * @return 用户信息集合信息
      */
     public List<User> selectUserList(User user);
+
+
+    /**
+     * 返回所有的用户,并转化成map
+     * @return  id - user map
+     */
+    public Map<Long,User> selectUserMap();
 
     /**
      * 通过用户名查询用户

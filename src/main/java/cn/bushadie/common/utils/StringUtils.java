@@ -324,4 +324,24 @@ public class StringUtils extends org.apache.commons.lang3.StringUtils {
         }
         return result.toString();
     }
+
+    public static String convertNumberToChina(Integer num) {
+        String[] intArr={"0","1","2","3","4","5","6","7","8","9",};
+        String[] strArr={"零","一","二","三","四","五","六","七","八","九",};
+        String[] Chinese={"","十","百","千","万","十","百","千","亿"};
+        char[] tmpArr=num.toString().toCharArray();
+        String tmpVal="";
+        for(int i=0;i<tmpArr.length;i++) {
+            tmpVal+=strArr[tmpArr[i]-48]; //ASCII编码 0为48
+            tmpVal+=Chinese[tmpArr.length-1-i];//根据对应的位数插入对应的单位
+        }
+        if(tmpVal.startsWith("一十")) {
+            tmpVal=tmpVal.replace("一十","十");
+        }
+        while(tmpVal.endsWith("零")) {
+            tmpVal=tmpVal.substring(0,tmpVal.length()-1);
+        }
+        //        return tmpVal.("零".toArray());
+        return tmpVal;
+    }
 }

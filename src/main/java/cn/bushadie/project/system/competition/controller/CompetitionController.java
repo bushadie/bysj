@@ -19,7 +19,9 @@ import cn.bushadie.project.system.dept.domain.Dept;
 import cn.bushadie.project.system.dept.service.DeptServiceImpl;
 import cn.bushadie.project.system.user.domain.User;
 import lombok.Data;
+import org.apache.shiro.authz.annotation.Logical;
 import org.apache.shiro.authz.annotation.RequiresPermissions;
+import org.apache.shiro.authz.annotation.RequiresRoles;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.transaction.annotation.Transactional;
@@ -60,7 +62,6 @@ public class CompetitionController extends BaseController {
     @PostMapping("/list")
     @ResponseBody
     public TableDataInfo list(DataVo dataVo) {
-//        startPage();
         Competition competition=dataVo.getInstance();
         List<Competition> list=competitionService.selectCompetitionList(competition);
         // 根据姓名查找时需要
@@ -146,6 +147,16 @@ public class CompetitionController extends BaseController {
     public AjaxResult remove(String ids) {
         return toAjax(competitionService.deleteCompetitionByIds(ids));
     }
+
+    @RequiresPermissions("system:competition:list")
+    @RequiresRoles(value={"admin","teacher"},logical=Logical.OR)
+    @GetMapping("/detail/{competitionId}")
+    public String detail(@PathVariable("competitionId") Long competitionId,ModelMap mmap){
+        Competition competition=competitionService.selectCompetitionById(competitionId);
+        mmap.put("competition",competition);
+        return "system/competition/data/detail";
+    }
+
 
     @Data
     private class DataVo {

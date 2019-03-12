@@ -1,7 +1,9 @@
 package cn.bushadie.project.system.user.service;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import cn.bushadie.common.constant.UserConstants;
 import cn.bushadie.common.support.Convert;
@@ -58,6 +60,21 @@ public class UserServiceImpl implements IUserService {
     public List<User> selectUserList(User user) {
         // 生成数据权限过滤条件
         return userMapper.selectUserList(user);
+    }
+
+    /**
+     * 返回所有的用户,并转化成map
+     *
+     * @return id - user map
+     */
+    @Override
+    public Map<Long,User> selectUserMap() {
+        List<User> users=selectUserList(new User());
+        HashMap<Long,User> map=new HashMap<>(users.size());
+        for(User user: users) {
+            map.put(user.getUserId(),user);
+        }
+        return map;
     }
 
     /**

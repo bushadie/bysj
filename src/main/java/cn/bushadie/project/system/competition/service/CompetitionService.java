@@ -2,6 +2,8 @@ package cn.bushadie.project.system.competition.service;
 
 import cn.bushadie.common.support.Convert;
 import cn.bushadie.common.utils.DateUtils;
+import cn.bushadie.common.utils.StringUtils;
+import cn.bushadie.framework.web.domain.AjaxResult;
 import cn.bushadie.project.system.competition.domain.*;
 import cn.bushadie.project.system.competition.mapper.*;
 import cn.bushadie.project.system.dept.domain.Dept;
@@ -9,6 +11,10 @@ import cn.bushadie.project.system.dept.service.DeptServiceImpl;
 import cn.bushadie.project.system.role.domain.Role;
 import cn.bushadie.project.system.user.domain.User;
 import cn.bushadie.project.system.user.mapper.UserMapper;
+import cn.bushadie.project.system.user.service.UserServiceImpl;
+import cn.hutool.core.util.ReflectUtil;
+import cn.hutool.poi.excel.ExcelUtil;
+import cn.hutool.poi.excel.ExcelWriter;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
@@ -28,6 +34,8 @@ public class CompetitionService {
 
     @Autowired
     private DeptServiceImpl deptService;
+    @Autowired
+    private UserServiceImpl userService;
 
     @Autowired
     private CompetitionMapper competitionMapper;
@@ -167,9 +175,14 @@ public class CompetitionService {
      * @param userId userid
      * @return 0 正常辞去
      *          1 不是队长
+     *          2 有其他成员,请先让贤
      */
     @Transactional
     public int leaveLeader(Long groupId,Long userId) {
+        List<Groupinfo> persons=groupinfoMapper.selectGroupinfoList(new Groupinfo().setGroupid(groupId).setLeaderid(userId));
+        if(   persons.size()!=1){
+            return 2;
+        }
         int count=groupinfoMapper.deleteGroupinfoByGroupIdAndUserId(groupId,userId);
         if( count!=0 ){
             groupMapper.decreaseGroupNum(groupId);
@@ -458,5 +471,89 @@ public class CompetitionService {
         for(Groupinfo groupinfo: groupinfos) {
             groupinfoMapper.changeLeaderId(groupinfo.getId(),uid);
         }
+    }
+
+    /**
+     * 导出competition信息
+     * @param competitionid
+     * @return
+     */
+    public AjaxResult exportXML(Long competitionid) {
+        Competition competition=selectCompetitionById(competitionid);
+        cn.bushadie.common.utils.poi.ExcelUtil<Competition> util=new cn.bushadie.common.utils.poi.ExcelUtil<>(Competition.class);
+
+        String filename = util.encodingFilename(competition.getTitle()+"_报名情况统计");
+        ExcelWriter writer=ExcelUtil.getWriter(util.getAbsoluteFile(filename));
+
+        Map<Long,User> userMap=userService.selectUserMap();
+        // 行号  组号
+        int rowIndex = 0,groupNum=1;
+        for(Group group: competition.getGroups()) {
+            // 单独一组的标题
+            String titleInfo;
+            if( group.getMost() == 1 ){
+                titleInfo="单人报名名单";
+            }else if( group.getLeast().equals(group.getMost()) ){
+                titleInfo = group.getLeast() + "人组报名名单";
+            }else {
+                titleInfo=group.getLeast() + "-" + group.getMost() + "人组报名名单";
+            }
+            writer.merge(group.getMost().intValue(), titleInfo);
+            writer.autoSizeColumn(rowIndex++);
+
+
+            // 对单独的组进行排序  leader在第一位
+            List<Groupinfo> groupinfos=group.getGroupinfos();
+            groupinfos.sort((x,y)->{
+                if(!x.getLeaderid().equals(y.getLeaderid())) {
+                    long ret=x.getLeaderid()-y.getLeaderid();
+                    return (int)ret;
+                }else {
+                    if(x.isLeader()) {
+                        return -1;
+                    }else if(y.isLeader()) {
+                        return 1;
+                    }else {
+                        long ret=x.getUid()-y.getUid();
+                        return (int)ret;
+                    }
+                }
+            });
+
+            ArrayList<String> list=new ArrayList<>(group.getMost().intValue()+1);
+            list.add("第" +StringUtils.convertNumberToChina(groupNum)+"组");
+            list.add(userMap.get(groupinfos.get(0).getUid()).getUserName());
+            for(int i=1;i<groupinfos.size();i++) {
+                if( ! groupinfos.get(i).getLeaderid().equals(groupinfos.get(i-1).getLeaderid()) ){
+                    writer.write(getLists(list));
+                    list.clear();
+                    writer.autoSizeColumn(rowIndex++);
+                    groupNum++;
+                    list.add("第" +StringUtils.convertNumberToChina(groupNum)+"组");
+                }
+                list.add(userMap.get(groupinfos.get(i).getUid()).getUserName());
+            }
+            groupNum++;
+            writer.write(getLists(list));
+            writer.autoSizeColumn(rowIndex++);
+        }
+        writer.close();
+        return AjaxResult.success(filename);
+    }
+
+    /**
+     * 在list外面 再包一层list
+     * @param list   ArrayList<String>
+     * @return
+     */
+    private ArrayList<ArrayList<String >> getLists(ArrayList<String> list){
+        ArrayList<ArrayList<String>> lists=new ArrayList<>(1);
+        Object elementData=ReflectUtil.getFieldValue(list,"elementData");
+        int size=((Object[])elementData).length;
+        for(int i = list.size();i<size;i++){
+            list.add("");
+        }
+        lists.add(list);
+        return lists;
     }
 }

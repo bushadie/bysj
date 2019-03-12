@@ -18,6 +18,10 @@ import java.util.List;
  */
 @Service
 public class GroupinfoService {
+
+    @Autowired
+    private CompetitionService competitionService;
+
     @Autowired
     private GroupinfoMapper groupinfoMapper;
     @Autowired
@@ -78,8 +82,8 @@ public class GroupinfoService {
      * @param groupid groupid
      * @return 结果
      */
-    public Long countMemberNumber(Long groupid){
-        return groupinfoMapper.countMemberNumber(groupid);
+    public Long countMemberNumber(Long groupid,Long leaderId){
+        return groupinfoMapper.countGroupMemberNumber(groupid,leaderId);
     }
     /**
      * 统计该组中还剩多少名额
@@ -91,9 +95,23 @@ public class GroupinfoService {
         return groupinfoMapper.remainTeamNum(groupid,leaderid);
     }
 
+    /**
+     * 离开队伍
+     * @param competitionid
+     * @param groupinfoId
+     * @return  0正常辞去
+     *          1 不是队长
+     *          2 有其他成员,请先让贤
+     */
     @Transactional
-    public void quitTeam(Long competitionid,Long groupinfoId) {
+    public int quitTeam(Long competitionid,Long groupinfoId) {
+        // 判断是不是队长
+        Groupinfo groupinfo=groupinfoMapper.selectGroupinfoById(groupinfoId);
+        if( groupinfo.getUid().equals(groupinfo.getLeaderid()) ){
+            return competitionService.leaveLeader(groupinfo.getGroupid(),groupinfo.getUid());
+        }
         groupinfoMapper.deleteGroupinfoById(groupinfoId);
         competitionMapper.decreaseCompetitionNum(competitionid);
+        return 0;
     }
 }

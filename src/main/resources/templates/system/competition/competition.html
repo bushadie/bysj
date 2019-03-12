@@ -98,7 +98,10 @@
                 {
                     field: 'num',
                     title: '总报名人数',
-                    sortable: true
+                    sortable: true,
+                    formatter: function (value, row, index) {
+                        return '<a href="#" onclick="detail(\'' + row.id + '\',\'' + row.title + '\')">' + value + '</a>';
+                    }
                 },
                 {
                     field: 'signUpStatus',
@@ -122,6 +125,12 @@
         };
         $.table.init(options);
     });
+
+    /*字典列表-详细*/
+    function detail(competitionid,title) {
+        var url = prefix + '/detail/' + competitionid;
+        createMenuItem(url, title);
+    }
 </script>
 </body>
 </html>

@@ -1,0 +1,189 @@
+<!DOCTYPE HTML>
+<html lang="zh" xmlns:th="http://www.thymeleaf.org" xmlns:shiro="http://www.pollix.at/thymeleaf/shiro">
+<meta charset="utf-8">
+<head th:include="include :: header"></head>
+<link th:href="@{/ajax/libs/jquery-layout/jquery.layout-latest.css}" rel="stylesheet"/>
+<link th:href="@{/ajax/libs/jquery-ztree/3.5/css/metro/zTreeStyle.css}" rel="stylesheet"/>
+<body class="gray-bg">
+
+
+<div class="container-div  ui-layout-center">
+    <div class="row">
+        <div class="btn-group-sm hidden-xs" id="toolbar" role="group" >
+            <a class="btn btn-warning" onclick="exportXML()" >
+                <i class="fa fa-download"></i>
+                导出
+            </a>
+            <a class="btn btn-info" id="expandAllBtn">
+                <i class="fa fa-exchange"></i>
+                展开/折叠
+            </a>
+        </div>
+
+
+        <div  class="col-sm-5 select-table table-striped" >
+            <table class="col-sm-5" id="bootstrap-tree-table" data-mobile-responsive="true"></table>
+        </div>
+    </div>
+</div>
+<div th:include="include :: footer"></div>
+<script th:src="@{/ajax/libs/jquery-layout/jquery.layout-latest.js}"></script>
+<script th:src="@{/ajax/libs/jquery-ztree/3.5/js/jquery.ztree.all-3.5.js}"></script>
+<script th:inline="javascript">
+    var editFlag = [[${@permission.hasPermi('system:competitionSignUp:edit')}]];
+    var removeFlag = [[${@permission.hasPermi('system:competitionSignUp:remove')}]];
+    var prefix = ctx + "system/competitionSignUp/";
+    var datas = [[${@dict.getType('com_competition_status')}]];
+    let userid;
+
+
+    $(function () {
+        refreshTreeTable();
+    });
+
+
+
+    function refreshTreeTable() {
+        try {
+            $('.tool-right').remove();
+        } catch (e) {}
+        let id = [[${competition.id}]]
+        let treeTableOptions = {
+            prefix: prefix + "listfast/",
+            url: prefix + "listfast/"+id,
+            createUrl: prefix + "/add",
+            updateUrl: prefix + "/edit/{id}",
+            parentCode: "leader",
+            code: "uid",
+            uniqueId: "uid",
+            removeUrl: prefix + "/remove",
+            exportUrl: prefix + "/export",
+            sortName: "id",
+            sortOrder: "desc",
+            modalName: "竞赛",
+            search: false,
+            showExport: false,
+            columns: [{
+                field: 'selectItem',
+                radio: false
+            },
+                {
+                    field: 'username',
+                    title: '姓名',
+                    sortable: true
+                },
+                {
+                    field: 'least',
+                    title: '最少人数',
+                    sortable: true
+                },
+                {
+                    field: 'nowNum',
+                    title: '现有人数',
+                    sortable: false
+                    // visible: false
+                },
+                {
+                    field: 'most',
+                    title: '最多人数',
+                    sortable: true
+                },
+                {
+                    title: '操作',
+                    align: 'center',
+                    formatter: function (value, row, index) {
+                        console.log( row );
+                        var actions = [];
+                        if( row.uid != row.leaderid ){
+                            actions.push('<a class="btn btn-primary btn-edit btn-xs btn-rounded  ' + editFlag + '" href="#" onclick="appoint( \'' + row.groupid + '\',\'' + row.leaderid + '\',\'' + row.uid + '\')"><i class="fa fa-edit"></i>委任组长</a>');
+                        }
+                        actions.push('<a class="btn btn-danger btn-xs btn-rounded  ' + editFlag + '" href="#" onclick="quitTeam( \'' + row.groupinfoid + '\')"><i class="fa fa-remove"></i>退出</a>');
+
+                        return actions.join('');
+                    }
+                }]
+        };
+        $.treeTable.init(treeTableOptions);
+    }
+
+    function exportXML() {
+        let id = [[${competition.id}]];
+        $.modal.loading("正在导出数据，请稍后...");
+        $.ajax({
+            url:prefix+'exportXML',
+            type: 'post',
+            dataType:'json',
+            data: {'competitionid':id},
+            success: function (data) {
+                if( data.code!==0 ){
+                    $.modal.alertError(data.msg);
+                }else {
+                    window.location.href = ctx + "common/download?fileName=" + data.msg + "&delete=" + true;
+                }
+                $.modal.closeLoading();
+            },
+            error: function (data) {
+                $.modal.closeLoading();
+                $.modal.alertSuccess("到处失败");
+            }
+        })
+    }
+
+    /**
+     * 委任
+     */
+    function appoint(groupid,leaderId,uid) {
+        $.ajax({
+            url: prefix + 'appoint',
+            type: 'post',
+            dataType:'json',
+            data: {'groupid':groupid,'leaderId':leaderId ,"uid":uid },
+            success: function (data) {
+                console.log( data );
+                refreshTreeTable();
+            }
+        })
+    }
+
+    function leaveLeader(groupid) {
+        $.ajax({
+            type:'post',
+            url:prefix+'leaveLeader',
+            dataType: 'json',
+            data:{'groupId':groupid},
+            success:function (data) {
+                if( data.code!==0 ){
+                    $.modal.alertError(data.msg);
+                }else {
+                    $.modal.alertSuccess("退出成功");
+                }
+                refreshTreeTable();
+                initInfo( getCompetitionId())
+            }
+        })
+    }
+    function quitTeam(groupinfoid) {
+        let competitionid = [[${competition.id}]];
+        $.ajax({
+            type:'post',
+            url:prefix+'quitTeam',
+            dataType: 'json',
+            data:{'groupinfoid':groupinfoid,'competitionid':competitionid},
+            success: function (data) {
+                if( data.code!==0 ){
+                    if (data.msg.search("让贤") == -1) {
+                        $.modal.alertError('有其他成员,请先委任其他成语');
+                    }else{
+                        $.modal.alertError(data.msg);
+                    }
+                }else {
+                    $.modal.alertSuccess("退出成功");
+                }
+                refreshTreeTable();
+            }
+        })
+    }
+
+</script>
+</body>
+</html>

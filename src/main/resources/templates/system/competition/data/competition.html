@@ -134,11 +134,11 @@
         }
     }
     function refreshTreeTable() {
-        removeNoCompetition();
         let id = getCompetitionId();
         if( isNaN(id) ){
             return;
         }
+        removeNoCompetition();
         $('#bootstrap-tree-table-father').empty();
         $('#bootstrap-tree-table-father').append('<table class="col-sm-5" id="bootstrap-tree-table" data-mobile-responsive="true"></table>');
         let joinFlag=checkHasJoinCompetition();

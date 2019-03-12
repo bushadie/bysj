@@ -9,14 +9,24 @@ import cn.bushadie.project.system.competition.domain.Groupinfo;
 import cn.bushadie.project.system.competition.service.CompetitionService;
 import cn.bushadie.project.system.competition.service.GroupinfoService;
 import cn.bushadie.project.system.user.service.UserServiceImpl;
+import cn.hutool.core.util.CharsetUtil;
+import cn.hutool.poi.excel.ExcelUtil;
+import cn.hutool.poi.excel.ExcelWriter;
 import lombok.Data;
 import lombok.experimental.Accessors;
+import org.apache.shiro.authz.annotation.Logical;
 import org.apache.shiro.authz.annotation.RequiresPermissions;
+import org.apache.shiro.authz.annotation.RequiresRoles;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.ModelMap;
 import org.springframework.web.bind.annotation.*;
 
+import javax.servlet.ServletOutputStream;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+import java.io.IOException;
+import java.net.URLEncoder;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -117,6 +127,8 @@ public class CompetitionSignUpController extends BaseController {
         int flag=competitionService.leaveLeader(groupId,getUserId());
         if( flag==0 ){
             return success();
+        }else if( flag ==2 ){
+            return error("有其他成员,不能退出");
         }
         return error("您不是队长");
     }
@@ -136,7 +148,19 @@ public class CompetitionSignUpController extends BaseController {
         return success();
     }
 
-
+    /**
+     * 将队长职务强制转移到 uid
+     * @param groupid
+     * @param uid
+     * @return
+     */
+    @PostMapping("/appoint")
+    @RequiresRoles(value={"teacher","admin"},logical=Logical.OR)
+    @ResponseBody
+    public AjaxResult appoint(Long groupid,Long leaderId,Long uid){
+        competitionService.steppedDown(groupid,leaderId,uid);
+        return success();
+    }
 
     @RequiresPermissions("system:competitionSignUp:view")
     @PostMapping("/checkHasJoinCompetition")
@@ -170,8 +194,24 @@ public class CompetitionSignUpController extends BaseController {
     @PostMapping("/quitTeam")
     @ResponseBody
     public AjaxResult quitTeam(Long competitionid,Long groupinfoid) {
-        groupinfoService.quitTeam(competitionid,groupinfoid);
-        return success();
+        int flag=groupinfoService.quitTeam(competitionid,groupinfoid);
+        if( flag == 0 ){
+            return success();
+        }else {
+            return error("有其他成员,请先让贤");
+        }
+    }
+
+    /**
+     * 导出整个competition的信息
+     * @param competitionid
+     * @return
+     */
+    @RequiresRoles(value={"admin","teacher"},logical=Logical.OR)
+    @PostMapping("/exportXML")
+    @ResponseBody
+    public AjaxResult exportXML(Long competitionid) {
+        return competitionService.exportXML(competitionid);
     }
 
 
@@ -211,7 +251,7 @@ public class CompetitionSignUpController extends BaseController {
         for(Group group: groups) {
             for(Groupinfo groupinfo: group.getGroupinfos()) {
                 TreeVo treeVo=new TreeVo();
-                Long memberNumber=groupinfoService.countMemberNumber(group.getId());
+                Long memberNumber=groupinfoService.countMemberNumber(group.getId(),groupinfo.getLeaderid());
                 treeVo.setLeast(group.getLeast()).setMost(group.getMost())
                         .setGroupid(group.getId()).setCompetitionid(group.getCompetitionid())
                         .setUid(groupinfo.getUid()).setLeaderid(groupinfo.getLeaderid()).setGroupinfoid(groupinfo.getId())

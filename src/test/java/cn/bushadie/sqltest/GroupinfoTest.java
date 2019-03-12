@@ -26,7 +26,7 @@ public class GroupinfoTest {
 
     @Test
     public void countMemberNumber(){
-        System.out.println(groupinfoService.countMemberNumber(51L));
+//        System.out.println(groupinfoService.countMemberNumber(51L));
     }
 
     @Test

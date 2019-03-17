@@ -163,10 +163,10 @@ public class CompetitionController extends BaseController {
         private Long id;
         private Date startTime, endTime;
         private String k, v, min, max, groupNum,title,username,signUpStatus,post;
-        private String[] ks, vs, mins, maxs, groupNums,posts;
+        private String[] ks, vs, mins, maxs, groupNums,posts,groupInfos;
         private Competition competition =null;
         private Integer pageNum,pageSize;
-        private String orderByColumn,isAsc;
+        private String orderByColumn,isAsc,groupInfo;
         private Competition getInstance() {
             if(competition!=null) {
                 return competition;
@@ -179,6 +179,7 @@ public class CompetitionController extends BaseController {
             mins=Convert.toStrArray(min);
             maxs=Convert.toStrArray(max);
             groupNums=Convert.toStrArray(groupNum);
+            groupInfos=Convert.toStrArray(groupInfo);
 
             competition.setId(id).setTitle(title)
                     .setStartTime(startTime).setEndTime(endTime);
@@ -187,7 +188,7 @@ public class CompetitionController extends BaseController {
                 competition.getInfos().add(info);
             }
             for(int i=0;i<mins.length;i++) {
-                Group group=new Group().setLeastString(mins[i]).setMostString(maxs[i]).setNumString(groupNums[i]).setCompetitionid(id);
+                Group group=new Group().setLeastString(mins[i]).setMostString(maxs[i]).setNumString(groupNums[i]).setCompetitionid(id).setGroupInfo(groupInfos[i]);
                 competition.getGroups().add(group);
             }
 

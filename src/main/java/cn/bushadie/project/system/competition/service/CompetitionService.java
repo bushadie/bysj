@@ -277,7 +277,9 @@ public class CompetitionService {
      * @return
      */
     public List<Competition> delCompetitionFormListByPage(List<Competition> list,Integer pageSize,Integer pageNum){
-        return list.subList((pageNum-1)*pageSize,pageSize );
+        int min = (pageNum-1)*pageSize < list.size()?(pageNum-1)*pageSize:list.size();
+        int max = (pageNum)*pageSize < list.size()?(pageNum)*pageSize:list.size();
+        return list.subList(min,max );
     }
 
     /**
@@ -351,7 +353,7 @@ public class CompetitionService {
      */
     public List<Map<String,Object>> selectCompetitionTree(User user) {
         List<Competition> list=selectCompetitionListOpen();
-        delCompetitionFormListNotStart(list);
+//        delCompetitionFormListNotStart(list);
         delCompetitionFormListByDeptId(list,user);
         ArrayList<Map<String,Object>> trees=new ArrayList<>(list.size());
         trees=getTrees(list,false,null);
@@ -455,8 +457,19 @@ public class CompetitionService {
         return 0;
     }
 
+    /**
+     * 是否参加了这个事务  &&  这个事务是否开放
+     * @param competitionid
+     * @param userId
+     * @return
+     */
     public boolean checkHasJoinCompetition(Long competitionid,Long userId){
-        return competitionMapper.checkHasJoinCompetition(competitionid,userId) > 0;
+        Competition competition=competitionMapper.selectCompetitionById(competitionid);
+        int between=DateUtils.isBetween(competition.getStartTime(),competition.getEndTime());
+        if( between !=0 ){
+            return false;
+        }
+        return competitionMapper.checkHasJoinCompetition(competitionid,userId) == 0;
     }
 
     /**

@@ -162,6 +162,11 @@ public class CompetitionSignUpController extends BaseController {
         return success();
     }
 
+    /**
+     * 是否参加了这个事务  &&  这个事务是否开放
+     * @param competitionid  competitionid
+     * @return
+     */
     @RequiresPermissions("system:competitionSignUp:view")
     @PostMapping("/checkHasJoinCompetition")
     @ResponseBody
@@ -239,6 +244,13 @@ public class CompetitionSignUpController extends BaseController {
          */
         private Long leader;
         private String username,leaderName;
+
+        /**
+         * 0 人数不足
+         * 1 人数满足
+         * 2 人数已满
+         */
+        private String groupStatus;
         public TreeVo(){}
 
     }
@@ -259,6 +271,13 @@ public class CompetitionSignUpController extends BaseController {
                         .setLeaderName(userService.selectUserById(groupinfo.getLeaderid()).getUserName())
                         .setNowNum(memberNumber)
                         .setLeader(treeVo.getLeaderid().equals(treeVo.uid)?0:treeVo.getLeaderid());
+                if( treeVo.getNowNum() < treeVo.getLeast() ){
+                    treeVo.setGroupStatus("0");
+                }else if( treeVo.getMost().equals(treeVo.getNowNum() ) ){
+                    treeVo.setGroupStatus("2");
+                }else {
+                    treeVo.setGroupStatus("1");
+                }
                 treeVos.add(treeVo);
             }
         }

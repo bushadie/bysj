@@ -57,23 +57,27 @@
         </div>
     <hr>
         <div class="form-group">
-            <label class="col-sm-3 control-label" style="text-align: left">最少人数：</label>
-            <label class="col-sm-3 control-label" style="text-align: left">最多人数：</label>
-            <label class="col-sm-3 control-label" style="text-align: left">组数：</label>
+            <label class="col-sm-3 control-label" style="text-align: left">简要说明：</label>
+            <label class="col-sm-2 control-label" style="text-align: left">最少人数：</label>
+            <label class="col-sm-2 control-label" style="text-align: left">最多人数：</label>
+            <label class="col-sm-2 control-label" style="text-align: left">组数：</label>
             <a class="btn btn-success col-sm-1" onclick="addGroup()">
                 <i class="fa fa-plus"></i> 添加
             </a>
         </div>
         <div class="form-group group" th:each="group,groupStast:${competition.groups}" >
             <div class="col-sm-3">
+                <input name="groupInfo" class="form-control groupInfo" type="text" placeholder="请输入简要说明" th:value="${group.groupInfo}">
+            </div>
+            <div class="col-sm-2">
                 <input name="min" class="form-control" type="text" placeholder="请输入最少人数"
                        th:value="${group.least}" oninput="value=value.replace(/[^\d]/g,'')">
             </div>
-            <div class="col-sm-3">
+            <div class="col-sm-2">
                 <input name="max" class="form-control" type="text" placeholder="请输入最多人数"
                        th:value="${group.most}" oninput="value=value.replace(/[^\d]/g,'')">
             </div>
-            <div class="col-sm-3">
+            <div class="col-sm-2">
                 <input name="groupNum" class="form-control" type="text" placeholder="请输入组数"
                        th:value="${group.num}" oninput="value=value.replace(/[^\d]/g,'')">
             </div>

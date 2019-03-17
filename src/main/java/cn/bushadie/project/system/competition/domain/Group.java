@@ -33,6 +33,10 @@ public class Group {
      */
     private Long most;
     /**
+     * 对于组的简要说明
+     */
+    private String groupInfo;
+    /**
      * 组数量
      */
     private Long num;

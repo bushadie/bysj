@@ -135,12 +135,15 @@ function addGroup() {
         `
             <div class="form-group group">
                 <div class="col-sm-3">
+                    <input name="groupInfo" class="form-control groupInfo" type="text" placeholder="请输入简要说明">
+                </div>
+                <div class="col-sm-2">
                     <input name="min" class="form-control min" type="text" placeholder="请输入最少人数" oninput="value=value.replace(/[^\\d]/g,'')">
                 </div>
-                <div class="col-sm-3">
+                <div class="col-sm-2">
                     <input name="max" class="form-control max" type="text" placeholder="请输入最多人数" oninput="value=value.replace(/[^\\d]/g,'')">
                 </div>
-                <div class="col-sm-3">
+                <div class="col-sm-2">
                     <input name="groupNum" class="form-control groupNum" type="text" placeholder="请输入组数" oninput="value=value.replace(/[^\\d]/g,'')">
                 </div>
                 <a class="btn btn-danger btn-del btn-del col-sm-1" onclick="del($(this))">

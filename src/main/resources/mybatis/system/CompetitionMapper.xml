@@ -28,7 +28,7 @@
  <!--           解决前端orderby列名和实际列名不匹配的情况,   垃圾代码-->
             com.competition_id id,com.competition_title title,com.competition_start_time start_time,com.competition_end_time end_time,com.competition_num num,com.competition_singup_status,com.competition_singup_status sign_up_status,
             info.info_id, info.info_competitionid, info.info_k, info.info_v,
-            gp.group_id, gp.group_competitionid, gp.group_least, gp.group_most, gp.group_num, gp.group_now_num, group_accept,
+            gp.group_id, gp.group_competitionid, gp.group_least, gp.group_most, gp.group_num, gp.group_now_num, gp.group_accept,gp.group_group_info,
             gpf.groupinfo_id, gpf.groupinfo_groupid, gpf.groupinfo_uid, gpf.groupinfo_leaderid,
             user.user_id, user.dept_id, user.login_name, user.user_name, user.user_type, user.email, user.phonenumber, user.sex, user.avatar, user.password, user.salt, user.status, user.del_flag, user.login_ip, user.login_date, user.create_by, user.create_time, user.update_by, user.update_time, user.remark,
             user.user_name  username ,gp.group_most most,gp.group_least least,

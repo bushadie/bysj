@@ -33,7 +33,7 @@
     var editFlag = [[${@permission.hasPermi('system:competitionSignUp:edit')}]];
     var removeFlag = [[${@permission.hasPermi('system:competitionSignUp:remove')}]];
     var prefix = ctx + "system/competitionSignUp/";
-    var datas = [[${@dict.getType('com_competition_status')}]];
+    var datas = [[${@dict.getType('com_group_status')}]];
     let userid;
 
 
@@ -70,29 +70,43 @@
                 {
                     field: 'username',
                     title: '姓名',
+                    width: '15%',
                     sortable: true
                 },
                 {
                     field: 'least',
                     title: '最少人数',
+                    width: '15%',
                     sortable: true
                 },
                 {
                     field: 'nowNum',
                     title: '现有人数',
+                    width: '15%',
                     sortable: false
                     // visible: false
                 },
                 {
                     field: 'most',
                     title: '最多人数',
+                    width: '15%',
                     sortable: true
                 },
                 {
-                    title: '操作',
-                    align: 'center',
+                    field: 'groupStatus',
+                    title: '状态',
+                    align: 'left',
+                    width: '20%',
+                    sortable: true,
                     formatter: function (value, row, index) {
-                        console.log( row );
+                        return $.table.selectDictLabel(datas, value);
+                    }
+                },
+                {
+                    title: '操作',
+                    align: 'left',
+                    width: '20%',
+                    formatter: function (value, row, index) {
                         var actions = [];
                         if( row.uid != row.leaderid ){
                             actions.push('<a class="btn btn-primary btn-edit btn-xs btn-rounded  ' + editFlag + '" href="#" onclick="appoint( \'' + row.groupid + '\',\'' + row.leaderid + '\',\'' + row.uid + '\')"><i class="fa fa-edit"></i>委任组长</a>');
@@ -171,8 +185,8 @@
             data:{'groupinfoid':groupinfoid,'competitionid':competitionid},
             success: function (data) {
                 if( data.code!==0 ){
-                    if (data.msg.search("让贤") == -1) {
-                        $.modal.alertError('有其他成员,请先委任其他成语');
+                    if (data.msg.search("让贤") !== -1) {
+                        $.modal.alertError('有其他成员,请先委任其他成员');
                     }else{
                         $.modal.alertError(data.msg);
                     }

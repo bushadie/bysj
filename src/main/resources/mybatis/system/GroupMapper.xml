@@ -12,6 +12,7 @@
         <result property="num" column="group_num"/>
         <result property="nowNum" column="group_now_num"/>
         <result property="accept" column="group_accept"/>
+        <result property="groupInfo" column="group_group_info"/>
         <collection property="groupinfos" javaType="java.util.List" resultMap="cn.bushadie.project.system.competition.mapper.GroupinfoMapper.GroupinfoResult"/>
     </resultMap>
 
@@ -22,19 +23,21 @@
     <select id="selectGroupList" parameterType="cn.bushadie.project.system.competition.domain.Group" resultMap="GroupResult">
         <include refid="selectGroupVo"/>
         <where>
-            <if test="id != null ">and group_id = #{groupId}
+            <if test="id != null ">and group_id = #{id}
             </if>
-            <if test="competitionid != null ">and group_competitionid = #{groupCompetitionid}
+            <if test="competitionid != null ">and group_competitionid = #{competitionid}
             </if>
-            <if test="least != null ">and group_least = #{groupLeast}
+            <if test="least != null ">and group_least = #{least}
             </if>
-            <if test="most != null ">and group_most = #{groupMost}
+            <if test="most != null ">and group_most = #{most}
             </if>
-            <if test="num != null ">and group_num = #{groupNum}
+            <if test="num != null ">and group_num = #{num}
             </if>
-            <if test="nowNum != null ">and group_now_num = #{groupNowNum}
+            <if test="nowNum != null ">and group_now_num = #{nowNum}
             </if>
-            <if test="accept != null ">and group_accept = #{groupAccept}
+            <if test="accept != null ">and group_accept = #{accept}
+            </if>
+            <if test="groupInfo != null ">and group_group_info = #{groupInfo}
             </if>
         </where>
     </select>
@@ -66,6 +69,8 @@
             </if>
             <if test="accept != null  ">group_accept,
             </if>
+            <if test="groupInfo != null  ">group_group_info,
+            </if>
         </trim>
         <trim prefix="values (" suffix=")" suffixOverrides=",">
             <if test="id != null  ">#{id},
@@ -82,17 +87,20 @@
             </if>
             <if test="accept != null  ">#{accept},
             </if>
+            <if test="groupInfo != null  ">#{groupInfo},
+            </if>
         </trim>
     </insert>
     <insert id="insertGroups" parameterType="java.util.List">
         insert into com_group
-        (group_competitionid,group_least,group_most,group_num) values
+        (group_competitionid,group_least,group_most,group_num,group_group_info) values
         <foreach collection="list" index="index" item="item" separator="," >
             (
             #{item.competitionid},
             #{item.least},
             #{item.most},
-            #{item.num}
+            #{item.num},
+            #{item.groupInfo}
             )
         </foreach>
     </insert>
@@ -111,6 +119,8 @@
             <if test="nowNum != null  ">group_now_num = #{nowNum},
             </if>
             <if test="accept != null  ">group_accept = #{accept},
+            </if>
+            <if test="groupInfo != null  ">group_group_info = #{groupInfo},
             </if>
         </trim>
         where group_id = #{groupId}

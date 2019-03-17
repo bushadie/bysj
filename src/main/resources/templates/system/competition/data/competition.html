@@ -271,10 +271,13 @@
                 for (const info of data.competition.infos) {
                     addInfo(info.k,info.v)
                 }
-                let flag =  checkHasJoinCompetition();
+                let flag = 123;
                 function f(id) {
-                    if( flag ){
-                        return '';
+                    if( flag === 123  ){
+                        flag =  checkHasJoinCompetition();
+                    }
+                    if( !flag ){
+                        return ''
                     }
                     let result =
 

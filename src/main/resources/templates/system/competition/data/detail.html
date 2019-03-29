@@ -30,7 +30,7 @@
 <script th:src="@{/ajax/libs/jquery-layout/jquery.layout-latest.js}"></script>
 <script th:src="@{/ajax/libs/jquery-ztree/3.5/js/jquery.ztree.all-3.5.js}"></script>
 <script th:inline="javascript">
-    var editFlag = [[${@permission.hasPermi('system:competitionSignUp:edit')}]];
+    // var editFlag = [[${@permission.hasPermi('system:competitionSignUp:edit')}]];
     var removeFlag = [[${@permission.hasPermi('system:competitionSignUp:remove')}]];
     var prefix = ctx + "system/competitionSignUp/";
     var datas = [[${@dict.getType('com_group_status')}]];
@@ -107,11 +107,11 @@
                     align: 'left',
                     width: '20%',
                     formatter: function (value, row, index) {
-                        var actions = [];
-                        if( row.uid != row.leaderid ){
-                            actions.push('<a class="btn btn-primary btn-edit btn-xs btn-rounded  ' + editFlag + '" href="#" onclick="appoint( \'' + row.groupid + '\',\'' + row.leaderid + '\',\'' + row.uid + '\')"><i class="fa fa-edit"></i>委任组长</a>');
+                        let actions = [];
+                        if( row.uid !== row.leaderid ){
+                            actions.push('<a class="btn btn-primary btn-edit btn-xs btn-rounded " href="#" onclick="appoint( \'' + row.groupid + '\',\'' + row.leaderid + '\',\'' + row.uid + '\')"><i class="fa fa-edit"></i>委任组长</a>');
                         }
-                        actions.push('<a class="btn btn-danger btn-xs btn-rounded  ' + editFlag + '" href="#" onclick="quitTeam( \'' + row.groupinfoid + '\')"><i class="fa fa-remove"></i>退出</a>');
+                        actions.push('<a class="btn btn-danger btn-xs btn-rounded " href="#" onclick="quitTeam( \'' + row.groupinfoid + '\')"><i class="fa fa-remove"></i>退出</a>');
 
                         return actions.join('');
                     }
@@ -153,7 +153,6 @@
             dataType:'json',
             data: {'groupid':groupid,'leaderId':leaderId ,"uid":uid },
             success: function (data) {
-                console.log( data );
                 refreshTreeTable();
             }
         })

@@ -37,7 +37,7 @@
                             事务名称：<input type="text" name="title"/>
                         </li>
                         <li shiro:hasRole="admin">
-                            创建人姓名：<input type="text" name="username" />
+                            创建人姓名：<input type="text" name="username"/>
                         </li>
 
                         <li>
@@ -57,7 +57,8 @@
             </div>
 
 
-            <div id="bootstrap-tree-table-father" class="col-sm-5 select-table table-striped" style="width: 60%;margin-left: 3%;">
+            <div id="bootstrap-tree-table-father" class="col-sm-5 select-table table-striped"
+                 style="width: 60%;margin-left: 3%;">
                 <table class="col-sm-5" id="bootstrap-tree-table" data-mobile-responsive="true"></table>
             </div>
         </div>
@@ -74,7 +75,24 @@
     var prefix = ctx + "system/competitionSignUp/";
     var datas = [[${@dict.getType('com_competition_status')}]];
     let userid;
-
+    /**
+     * 是否已经点击过加入
+     */
+    let hasAdd = false;
+    function addCompetiton(){
+        hasAdd = true;
+        try {
+            $('.addCompetition').hide()
+        }catch (e) {
+        }
+    }
+    function leaveCompetition(){
+        hasAdd = false;
+        try {
+            $('.addCompetition').show()
+        }catch (e) {
+        }
+    }
 
     $(function () {
         $('body').layout({west__size: 185});
@@ -83,30 +101,32 @@
         queryCompetitionTree();
         getuserid();
     });
+
     function getuserid() {
         $.ajax({
-            url:prefix+'getuserid',
-            type:'post',
+            url: prefix + 'getuserid',
+            type: 'post',
             async: false,
             success: function (data) {
                 userid = data;
             }
         })
     }
+
     function queryCompetitionList() {
         refreshTreeTable();
 
     }
 
     function checkHasJoinCompetition() {
-        let result=false;
+        let result = false;
         $.ajax({
-            async:false,
-            type:'post',
-            url: prefix+'checkHasJoinCompetition',
-            data:{'competitionid':getCompetitionId()},
+            async: false,
+            type: 'post',
+            url: prefix + 'checkHasJoinCompetition',
+            data: {'competitionid': getCompetitionId()},
             success: function (data) {
-                result=data;
+                result = data;
             }
         });
         return result;
@@ -133,22 +153,23 @@
         } catch (e) {
         }
     }
+
     function refreshTreeTable() {
         let id = getCompetitionId();
-        if( isNaN(id) ){
+        if (isNaN(id)) {
             return;
         }
         removeNoCompetition();
         $('#bootstrap-tree-table-father').empty();
         $('#bootstrap-tree-table-father').append('<table class="col-sm-5" id="bootstrap-tree-table" data-mobile-responsive="true"></table>');
-        let joinFlag=checkHasJoinCompetition();
-        if( id == '' ){
+        let joinFlag = checkHasJoinCompetition();
+        if (id == '') {
             empty();
             return;
         }
         let treeTableOptions = {
             prefix: prefix + "listfast/",
-            url: prefix + "listfast/"+id,
+            url: prefix + "listfast/" + id,
             createUrl: prefix + "/add",
             updateUrl: prefix + "/edit/{id}",
             parentCode: "leader",
@@ -191,17 +212,17 @@
                     formatter: function (value, row, index) {
 
                         var actions = [];
-                        if( row.leader === 0 && joinFlag===false){
+                        if (row.leader === 0 && joinFlag === false && row.nowNum < row.most) {
                             actions.push('<a class="btn btn-primary btn-xs ' + editFlag + '" href="#" onclick="addTeam( \'' + row.groupinfoid + '\',\'' + row.leaderid + '\',\'' + row.competitionid + '\',\'' + row.groupid + '\')"><i class="fa fa-plus"></i>加入队伍</a>');
                         }
-                        if( userid === row.uid && row.leaderid===userid ){
+                        if (userid === row.uid && row.leaderid === userid) {
                             actions.push('<a class="btn btn-danger btn-xs btn-rounded  ' + editFlag + '" href="#" onclick="leaveLeader( \'' + row.groupid + '\')" id="' + row.uid + '"><i class="fa fa-remove"></i>退出</a>');
-                        }else if(userid === row.uid || row.leaderid===userid ){
+                        } else if (userid === row.uid || row.leaderid === userid) {
                             actions.push('<a class="btn btn-danger btn-xs btn-rounded  ' + editFlag + '" href="#" onclick="quitTeam( \'' + row.groupinfoid + '\')"><i class="fa fa-remove"></i>退出</a>');
-                            if( row.leaderid===userid ){
+                            if (row.leaderid === userid) {
                                 try {
-                                    $( '#' + userid).remove();
-                                }catch (e) {
+                                    $('#' + userid).remove();
+                                } catch (e) {
                                 }
                                 actions.push('<a class="btn btn-success btn-xs btn-rounded  ' + editFlag + '" href="#" onclick="steppedDown( \'' + row.groupid + '\',\'' + row.uid + '\')"><i class="fa fa-remove"></i>让贤</a>');
                             }
@@ -211,7 +232,7 @@
                     }
                 }]
         };
-        treeTableOptions.url=treeTableOptions.prefix+getCompetitionId();
+        treeTableOptions.url = treeTableOptions.prefix + getCompetitionId();
         $.treeTable.init(treeTableOptions);
     }
 
@@ -223,6 +244,7 @@
             onClick: zOnClick
         };
         $.tree.init(options);
+
         function zOnClick(event, treeId, treeNode) {
             $('#competitionId').val(Math.abs(treeNode.id));
             $.table.search();
@@ -252,46 +274,48 @@
      * 显示当前竞赛的相关信息
      * @param id 当前竞赛id
      */
-    function initInfo(id){
-        if( isNaN(id) ){
+    function initInfo(id) {
+        if (isNaN(id)) {
             return;
         }
         $.ajax({
-            type:'post',
-            url:prefix+'competitionInfo',
-            dataType:'json',
-            data:{'id':id},
-            success:function (data) {
+            type: 'post',
+            url: prefix + 'competitionInfo',
+            dataType: 'json',
+            data: {'id': id},
+            success: function (data) {
                 $('.competitionInfo').remove();
 
-                addInfo('事务标题',data.competition.title);
-                addInfo('开始时间',data.competition.startTime);
-                addInfo('结束时间',data.competition.endTime);
+                addInfo('事务标题', data.competition.title);
+                addInfo('开始时间', data.competition.startTime);
+                addInfo('结束时间', data.competition.endTime);
 
                 for (const info of data.competition.infos) {
-                    addInfo(info.k,info.v)
+                    addInfo(info.k, info.v)
                 }
-                let flag = 123;
+                let flag = 123
                 function f(id) {
-                    if( flag === 123  ){
-                        flag =  checkHasJoinCompetition();
+                    if( flag === 123 ){
+                        flag = checkHasJoinCompetition();
+                        hasAdd = flag;
                     }
-                    if( !flag ){
+                    if (flag) {
                         return ''
                     }
                     let result =
 
-                   '  <li >'+
-                   '     <a class="btn btn-primary btn-rounded btn-sm" id="'+id+'" onclick="createLeader($(this))"><i'+
-                   '             class="fa fa-plus"></i>&nbsp;加入</a>'+
-                   ' </li>'
+                        '  <li >' +
+                        '     <a class="btn btn-primary btn-rounded btn-sm addCompetition" id="' + id + '" onclick="createLeader($(this))"><i' +
+                        '             class="fa fa-plus"></i>&nbsp;加入</a>' +
+                        ' </li>'
 
-                    return result ;
+                    return result;
                 }
+
                 for (const group of data.competition.groups) {
                     let str = group.least + '-' + group.most + '人';
-                    if( group.least ===  group.most){
-                        str = group.least +  '人';
+                    if (group.least === group.most) {
+                        str = group.least + '人';
                     }
                     $('.competitionInfoTemp').last().before(
                         `
@@ -315,6 +339,7 @@
                          `
                     )
                 }
+
                 function addInfo(k, v) {
                     $('.competitionInfoTemp').last().before(
                         `
@@ -341,16 +366,16 @@
      * @param groupId
      * @param uid
      */
-    function steppedDown(groupId,uid){
+    function steppedDown(groupId, uid) {
         $.ajax({
-            type:'post',
+            type: 'post',
             dataType: 'json',
-            url: prefix+'steppedDown',
-            data:{'groupId':groupId,'uid':uid},
-            success:function (data) {
-                if( data.code!==0 ){
+            url: prefix + 'steppedDown',
+            data: {'groupId': groupId, 'uid': uid},
+            success: function (data) {
+                if (data.code !== 0) {
                     $.modal.alertError('失败请重试');
-                }else {
+                } else {
                     $.modal.alertSuccess("让贤成功");
                 }
                 refreshTreeTable();
@@ -363,85 +388,99 @@
     });
 
 
-
     function competitionSignUp() {
         var url = ctx + "system/competition";
         createMenuItem(url, "部门管理");
     }
 
     function createLeader(obj) {
+        if (hasAdd) {
+            return;
+        }
+        hasAdd = true;
         $.ajax({
-            type:'post',
-            url:prefix+'createLeader',
+            type: 'post',
+            url: prefix + 'createLeader',
             dataType: 'json',
-            data:{'groupId':obj.attr('id')},
-            success:function (data) {
-                if( data.code!==0 ){
+            data: {'groupId': obj.attr('id')},
+            success: function (data) {
+                if (data.code !== 0) {
                     $.modal.alertError(data.msg);
-                }else {
+                } else {
                     $.modal.alertSuccess("加入成功");
+                    addCompetiton();
                 }
                 refreshTreeTable();
-                initInfo( getCompetitionId())
+                initInfo(getCompetitionId())
             }
         })
     }
 
-    function addTeam(groupinfoId,leaderid,competitionid,groupid) {
+    function addTeam(groupinfoId, leaderid, competitionid, groupid) {
+        if (hasAdd) {
+            return;
+        }
+        hasAdd = true;
         $.ajax({
-            type:'post',
-            url: prefix+'addteam',
+            type: 'post',
+            url: prefix + 'addteam',
             data: {
                 'groupinfoId': groupinfoId,
                 'leaderid': leaderid,
-                'competitionid':competitionid,
-                'groupid':groupid
+                'competitionid': competitionid,
+                'groupid': groupid
             },
-            success:function (data) {
-                if( data.code===0 ){
+            success: function (data) {
+                if (data.code === 0) {
                     $.modal.alertSuccess('加入队伍成功');
-                }else {
-                    $.modal.alertError(data.msg)
+                    addCompetiton();
+                } else {
+                    $.modal.alertError(data.msg);
                 }
                 refreshTreeTable()
             }
         })
     }
+
     function leaveLeader(groupid) {
         $.ajax({
-            type:'post',
-            url:prefix+'leaveLeader',
+            type: 'post',
+            url: prefix + 'leaveLeader',
             dataType: 'json',
-            data:{'groupId':groupid},
-            success:function (data) {
-                if( data.code!==0 ){
+            data: {'groupId': groupid},
+            success: function (data) {
+                if (data.code !== 0) {
                     $.modal.alertError(data.msg);
-                }else {
+                } else {
                     $.modal.alertSuccess("退出成功");
+                    leaveCompetition();
                 }
                 refreshTreeTable();
-                initInfo( getCompetitionId())
+                initInfo(getCompetitionId())
             }
         })
     }
+
     function quitTeam(groupinfoid) {
         $.ajax({
-            type:'post',
-            url:prefix+'quitTeam',
+            type: 'post',
+            url: prefix + 'quitTeam',
             dataType: 'json',
-            data:{'groupinfoid':groupinfoid,'competitionid':getCompetitionId()},
+            data: {'groupinfoid': groupinfoid, 'competitionid': getCompetitionId()},
             success: function (data) {
-                if( data.code!==0 ){
+                if (data.code !== 0) {
                     $.modal.alertError(data.msg);
-                }else {
+                } else {
                     $.modal.alertSuccess("退出成功");
+                    leaveCompetition();
                 }
                 refreshTreeTable();
             }
         })
     }
+
     function getCompetitionId() {
-        return Math.abs( $('#competitionId').val() );
+        return Math.abs($('#competitionId').val());
     }
 </script>
 </body>

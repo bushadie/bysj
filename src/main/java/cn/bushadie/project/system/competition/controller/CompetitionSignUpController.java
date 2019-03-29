@@ -8,6 +8,8 @@ import cn.bushadie.project.system.competition.domain.Group;
 import cn.bushadie.project.system.competition.domain.Groupinfo;
 import cn.bushadie.project.system.competition.service.CompetitionService;
 import cn.bushadie.project.system.competition.service.GroupinfoService;
+import cn.bushadie.project.system.role.domain.Role;
+import cn.bushadie.project.system.user.domain.User;
 import cn.bushadie.project.system.user.service.UserServiceImpl;
 import cn.hutool.core.util.CharsetUtil;
 import cn.hutool.poi.excel.ExcelUtil;
@@ -78,7 +80,8 @@ public class CompetitionSignUpController extends BaseController {
         return tree;
     }
 
-    @RequiresPermissions("system:competitionSignUp:list")
+//    @RequiresPermissions("system:competitionSignUp:list")
+    @RequiresRoles(value={"teacher","admin","student"},logical=Logical.OR)
     @GetMapping("/listfast/{competitionid}")
     @ResponseBody
     public List<TreeVo> listfast(@PathVariable("competitionid") Long competitionid) {
@@ -195,10 +198,27 @@ public class CompetitionSignUpController extends BaseController {
         return success();
     }
 
-    @RequiresPermissions("system:competitionSignUp:edit")
+//    @RequiresPermissions("system:competitionSignUp:edit")
     @PostMapping("/quitTeam")
     @ResponseBody
     public AjaxResult quitTeam(Long competitionid,Long groupinfoid) {
+        User sysUser=getSysUser();
+        List<Role> roles=sysUser.getRoles();
+        //  教师可直接指向,  否则需要时本人
+        boolean isTeacher = false;
+        for(Role role: roles) {
+            if("teacher".equals(role.getRoleKey()) || "admin".equals(role.getRoleKey())){
+                isTeacher = true;
+                break;
+            }
+        }
+        if( !isTeacher ){
+            Groupinfo groupinfo=groupinfoService.selectGroupinfoById(groupinfoid);
+            if( !groupinfo.getUid().equals(sysUser.getUserId()) ){
+                // 其他人调用接口踢掉别人
+                return error("非法操作");
+            }
+        }
         int flag=groupinfoService.quitTeam(competitionid,groupinfoid);
         if( flag == 0 ){
             return success();

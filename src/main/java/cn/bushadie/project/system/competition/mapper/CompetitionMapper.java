@@ -85,9 +85,10 @@ public interface CompetitionMapper {
 
     /**
      * 判断是否已经加入了这个这个 competition
+     * 0 是没有加入
      * @param competitionId
      * @param userId
-     * @return
+     * @return int 0是没有加入
      */
     int checkHasJoinCompetition(@Param("competitionId") Long competitionId,@Param("userId") Long userId);
 }

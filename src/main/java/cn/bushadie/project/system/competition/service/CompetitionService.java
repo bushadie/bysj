@@ -467,9 +467,9 @@ public class CompetitionService {
         Competition competition=competitionMapper.selectCompetitionById(competitionid);
         int between=DateUtils.isBetween(competition.getStartTime(),competition.getEndTime());
         if( between !=0 ){
-            return false;
+            return true;
         }
-        return competitionMapper.checkHasJoinCompetition(competitionid,userId) == 0;
+        return competitionMapper.checkHasJoinCompetition(competitionid,userId) != 0;
     }
 
     /**
